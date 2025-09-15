@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-[url('/Images/Bg-image.jpg')] bg-cover bg-center min-h-screen p-6 ">
+<body class="bg-[url(/Images/Bg-image.jpg)] bg-fixed min-h-screen p-6 ">
     <img src="/Images/Mess Accounta-logo.svg" alt="" class=" lg:sticky top-10 ">
     <div class="bg-[#EEF8FF]/50 rounded-3xl w-full backdrop-blur border-2 border-white lg:w-1/2 mx-auto  p-6 ">
 
@@ -80,7 +80,7 @@
             </div>
 
             <!-- Table -->
-            <div class="bg-white rounded-2xl shadow mt-6 overflow-hidden">
+            <div class="bg-white rounded-2xl shadow mt-6 overflow-hidden border border-[#FF8787]">
                 <table class="w-full border-collapse">
                     <thead>
                         <tr class="bg-orange-100 text-left">
@@ -115,6 +115,7 @@
           </td>
         </tr>`;
                 table.innerHTML += row;
+                
             });
         }
 
@@ -124,6 +125,7 @@
             if (!name || !amount) return;
             people.push({ name, given: amount, balance: amount });
             renderPeople();
+            console.log(amount);    
         }
 
         function increaseAmount() {
