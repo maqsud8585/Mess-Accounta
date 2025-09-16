@@ -2,161 +2,161 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mess Accounta</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mess Accounta</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-[url('./images/Bg-image.jpg')] bg-fixed min-h-screen p-6">
-    <img src="./images/Mess Accounta-logo.svg" alt="" class="w-28 sticky top-5 lg:sticky top-10">
-    <div class="bg-[#EEF8FF]/50 rounded-3xl w-full backdrop-blur border-2 border-white mt-5 lg:w-2/3 mx-auto p-6">
-        <div class="max-w-6xl mx-auto">
-            <!-- Summary Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div class="bg-white rounded-2xl shadow p-4">
-                    <p class="text-sm text-gray-500">Given Amount</p>
-                    <p id="givenAmount" class="text-xl font-semibold">₹0</p>
-                </div>
-                <div class="bg-white rounded-2xl shadow p-4">
-                    <p class="text-sm text-gray-500">Spent Amount</p>
-                    <p id="spentAmount" class="text-xl font-semibold text-red-600">₹0</p>
-                </div>
-                <div class="bg-white rounded-2xl shadow p-4">
-                    <p class="text-sm text-gray-500">Current Balance</p>
-                    <p id="currentAmount" class="text-xl font-semibold text-green-600">₹0</p>
-                </div>
-            </div>
-
-            <!-- People Table -->
-            <div class="bg-white rounded-2xl border border-[#FF8787] shadow overflow-hidden mb-6">
-                <table class="w-full border-collapse">
-                    <thead>
-                        <tr class="bg-[#79C9FA] text-left text-white">
-                            <th class="p-2">Joining Date</th>
-                            <th class="p-2">Name</th>
-                            <th class="p-2">Given</th>
-                            <th class="p-2">Share</th>
-                            <th class="p-2">Balance</th>
-                            <th class="p-2">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="peopleTable"></tbody>
-                </table>
-            </div>
-
-            <!-- Forms -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Add Person and Increase Amount -->
-                <div class="bg-white rounded-2xl shadow p-4 border border-[#005BA2]">
-                    <h3 class="font-semibold mb-3">Add Person</h3>
-                    <div class="flex gap-2">
-                        <input id="addName" type="text" placeholder="Name" class="border p-2 rounded w-full">
-                        <input id="addAmount" type="number" placeholder="Amount" class="border p-2 rounded w-full">
-                        <input id="addDate" type="date" class="border p-2 rounded w-full">
-                        <button onclick="addPerson()"
-                            class="bg-[#5D8A2B] text-white px-5 py-2 rounded hover:bg-green-600">Add</button>
-                    </div>
-
-                    <h3 class="font-semibold mb-3 mt-5">Increase Amount</h3>
-                    <div class="flex gap-2">
-                        <input id="incName" type="text" placeholder="Name" class="border p-2 rounded w-full">
-                        <input id="incAmount" type="number" placeholder="Amount" class="border p-2 rounded w-full">
-                        <button onclick="increaseAmount()"
-                            class="bg-[#E9335C] text-white px-5 py-2 rounded hover:bg-pink-500">Add</button>
-                    </div>
-                </div>
-
-                <!-- Add Item -->
-                <div class="bg-white rounded-2xl shadow p-4 border border-[#5D8A2B]">
-                    <h3 class="font-semibold mb-3">Add Item</h3>
-                    <div class="grid gap-2">
-                        <input id="itemDate" type="date" class="border p-2 rounded">
-                        <input id="itemName" type="text" placeholder="Enter Item" class="border p-2 rounded">
-                        <input id="itemAmount" type="number" placeholder="Enter Amount" class="border p-2 rounded">
-                        <input id="purchasedBy" type="text" placeholder="Purchased By" class="border p-2 rounded">
-                        <button onclick="addItem()"
-                            class="bg-orange-500 text-white px-4 py-2 rounded mt-2 w-32 justify-self-center hover:bg-orange-400">Add
-                            Item</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Items Table -->
-            <div class="bg-white rounded-2xl shadow mt-6 overflow-hidden border border-[#FF8787]">
-                <table class="w-full border-collapse">
-                    <thead>
-                        <tr class="bg-orange-100 text-left">
-                            <th class="p-2">Date</th>
-                            <th class="p-2">Item</th>
-                            <th class="p-2">Amount</th>
-                            <th class="p-2">Purchased By</th>
-                            <th class="p-2">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="itemsTable"></tbody>
-                </table>
-            </div>
+  <img src="./images/Mess Accounta-logo.svg" alt="" class="w-28 sticky top-5 lg:sticky top-10">
+  <div class="bg-[#EEF8FF]/50 rounded-3xl w-full backdrop-blur border-2 border-white mt-5 lg:w-2/3 mx-auto p-6">
+    <div class="max-w-6xl mx-auto">
+      <!-- Summary Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-white rounded-2xl shadow p-4">
+          <p class="text-sm text-gray-500">Given Amount</p>
+          <p id="givenAmount" class="text-xl font-semibold">₹0</p>
         </div>
+        <div class="bg-white rounded-2xl shadow p-4">
+          <p class="text-sm text-gray-500">Spent Amount</p>
+          <p id="spentAmount" class="text-xl font-semibold text-red-600">₹0</p>
+        </div>
+        <div class="bg-white rounded-2xl shadow p-4">
+          <p class="text-sm text-gray-500">Current Balance</p>
+          <p id="currentAmount" class="text-xl font-semibold text-green-600">₹0</p>
+        </div>
+      </div>
+
+      <!-- People Table -->
+      <div class="bg-white rounded-2xl border border-[#FF8787] shadow overflow-hidden mb-6">
+        <div class="max-h-40 overflow-y-auto">
+          <table class="w-full border-collapse">
+            <thead class="sticky top-0 bg-[#79C9FA] text-left text-white z-10">
+              <tr>
+                <th class="p-2">Joining Date</th>
+                <th class="p-2">Name</th>
+                <th class="p-2">Given</th>
+                <th class="p-2">Share</th>
+                <th class="p-2">Balance</th>
+                <th class="p-2">Action</th>
+              </tr>
+            </thead>
+            <tbody id="peopleTable"></tbody>
+          </table>
+        </div>
+
+      </div>
+
+
+      <!-- Forms -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Add Person and Increase Amount -->
+        <div class="bg-white rounded-2xl shadow p-4 border border-[#005BA2]">
+          <h3 class="font-semibold mb-3">Add Person</h3>
+          <div class="flex gap-2">
+            <input id="addName" type="text" placeholder="Name" class="border p-2 rounded w-full">
+            <input id="addAmount" type="number" placeholder="Amount" class="border p-2 rounded w-full">
+            <input id="addDate" type="date" class="border p-2 rounded w-full">
+            <button onclick="addPerson()"
+              class="bg-[#5D8A2B] text-white px-5 py-2 rounded hover:bg-green-600">Add</button>
+          </div>
+
+          <h3 class="font-semibold mb-3 mt-5">Increase Amount</h3>
+          <div class="flex gap-2">
+            <input id="incName" type="text" placeholder="Name" class="border p-2 rounded w-full">
+            <input id="incAmount" type="number" placeholder="Amount" class="border p-2 rounded w-full">
+            <button onclick="increaseAmount()"
+              class="bg-[#E9335C] text-white px-5 py-2 rounded hover:bg-pink-500">Add</button>
+          </div>
+        </div>
+
+        <!-- Add Item -->
+        <div class="bg-white rounded-2xl shadow p-4 border border-[#5D8A2B]">
+          <h3 class="font-semibold mb-3">Add Item</h3>
+          <div class="grid gap-2">
+            <input id="itemDate" type="date" class="border p-2 rounded">
+            <input id="itemName" type="text" placeholder="Enter Item" class="border p-2 rounded">
+            <input id="itemAmount" type="number" placeholder="Enter Amount" class="border p-2 rounded">
+            <input id="purchasedBy" type="text" placeholder="Purchased By" class="border p-2 rounded">
+            <button onclick="addItem()"
+              class="bg-orange-500 text-white px-4 py-2 rounded mt-2 w-32 justify-self-center hover:bg-orange-400">Add
+              Item</button>
+          </div>
+        </div>
+      </div>
+      <!-- Items Table -->
+      <div class="bg-white rounded-2xl shadow mt-6 overflow-hidden border border-[#FF8787]">
+        <div class="max-h-40 overflow-y-auto">
+          <table class="w-full border-collapse">
+            <thead class="sticky top-0 bg-orange-100 text-left">
+              <tr>
+                <th class="p-2">Date</th>
+                <th class="p-2">Item</th>
+                <th class="p-2">Amount</th>
+                <th class="p-2">Purchased By</th>
+                <th class="p-2">Action</th>
+              </tr>
+            </thead>
+            <tbody id="itemsTable"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
+  </div>
 
   <script>
-  let people = JSON.parse(localStorage.getItem("people")) || [];
-  let items = JSON.parse(localStorage.getItem("items")) || [];
+    let people = JSON.parse(localStorage.getItem("people")) || [];
+    let items = JSON.parse(localStorage.getItem("items")) || [];
 
-  function saveData() {
-    localStorage.setItem("people", JSON.stringify(people));
-    localStorage.setItem("items", JSON.stringify(items));
-  }
+    function saveData() {
+      localStorage.setItem("people", JSON.stringify(people));
+      localStorage.setItem("items", JSON.stringify(items));
+    }
 
-  function updateSummary() {
-    const given = people.reduce((sum, p) => sum + (p.given || 0), 0);
-    const spent = items.reduce((sum, i) => sum + (i.amount || 0), 0);
-    const balance = given - spent;
+    function updateSummary() {
+      const given = people.reduce((sum, p) => sum + (p.given || 0), 0);
+      const spent = items.reduce((sum, i) => sum + (i.amount || 0), 0);
+      const balance = given - spent;
 
-    document.getElementById("givenAmount").innerText = "₹" + given;
-    document.getElementById("spentAmount").innerText = "₹" + spent;
-    document.getElementById("currentAmount").innerText = "₹" + balance;
+      document.getElementById("givenAmount").innerText = "₹" + given;
+      document.getElementById("spentAmount").innerText = "₹" + spent;
+      document.getElementById("currentAmount").innerText = "₹" + balance;
 
-    updateBalances();
-    renderItems();
-    saveData();
-  }
+      updateBalances();
+      renderItems();
+      saveData();
+    }
 
-  function updateBalances() {
-    if (people.length === 0) return;
+    function updateBalances() {
+      if (people.length === 0) return;
 
-    people.forEach(p => {
-      // person ke join date ke baad wale items filter karo
-      const eligibleItems = items.filter(
-        i => new Date(i.date) >= new Date(p.date)
-      );
-
-      // un items ka total spent
-      const totalEligibleSpent = eligibleItems.reduce((sum, i) => sum + (i.amount || 0), 0);
-
-      // total members jo us item ke liye eligible hain
-      let totalShare = 0;
-      eligibleItems.forEach(item => {
-        const eligibleMembers = people.filter(
-          person => new Date(person.date) <= new Date(item.date)
+      people.forEach(p => {
+        const eligibleItems = items.filter(
+          i => new Date(i.date) >= new Date(p.date)
         );
-        const itemShare = item.amount / eligibleMembers.length;
-        totalShare += itemShare;
+        const totalEligibleSpent = eligibleItems.reduce((sum, i) => sum + (i.amount || 0), 0);
+        let totalShare = 0;
+        eligibleItems.forEach(item => {
+          const eligibleMembers = people.filter(
+            person => new Date(person.date) <= new Date(item.date)
+          );
+          const itemShare = item.amount / eligibleMembers.length;
+          totalShare += itemShare;
+        });
+
+        p.share = Math.round(totalShare);
+        p.balance = Math.round((p.given || 0) - totalShare);
       });
 
-      p.share = Math.round(totalShare);
-      p.balance = Math.round((p.given || 0) - totalShare);
-    });
+      renderPeople();
+    }
 
-    renderPeople();
-  }
-
-  function renderPeople() {
-    const table = document.getElementById("peopleTable");
-    table.innerHTML = "";
-    people.forEach((p, index) => {
-      const row = `<tr class="border-b">
+    function renderPeople() {
+      const table = document.getElementById("peopleTable");
+      table.innerHTML = "";
+      people.forEach((p, index) => {
+        const row = `<tr class="border-b">
         <td class="p-2">${p.date || "-"}</td>
         <td class="p-2">${p.name}</td>
         <td class="p-2">₹${p.given || 0}</td>
@@ -168,15 +168,15 @@
           <button onclick="removePerson(${index})" class="text-red-600 hover:underline">Remove</button>
         </td>
       </tr>`;
-      table.innerHTML += row;
-    });
-  }
+        table.innerHTML += row;
+      });
+    }
 
-  function renderItems() {
-    const table = document.getElementById("itemsTable");
-    table.innerHTML = "";
-    items.forEach((i, index) => {
-      const row = `<tr class="border-b">
+    function renderItems() {
+      const table = document.getElementById("itemsTable");
+      table.innerHTML = "";
+      items.forEach((i, index) => {
+        const row = `<tr class="border-b">
         <td class="p-2">${i.date}</td>
         <td class="p-2">${i.name}</td>
         <td class="p-2">₹${i.amount}</td>
@@ -185,69 +185,75 @@
           <button onclick="removeItem(${index})" class="text-red-600 hover:underline">Remove</button>
         </td>
       </tr>`;
-      table.innerHTML += row;
-    });
-  }
-
-  function addPerson() {
-    const name = document.getElementById("addName").value;
-    const amount = Number(document.getElementById("addAmount").value);
-    const date = document.getElementById("addDate").value || new Date().toISOString().split("T")[0];
-
-    if (!name || isNaN(amount)) return;
-
-    people.push({ name, given: amount, date, share: 0, balance: 0 });
-
-    document.getElementById("addName").value = "";
-    document.getElementById("addAmount").value = "";
-    document.getElementById("addDate").value = "";
-
-    updateSummary();
-  }
-
-  function increaseAmount() {
-    const name = document.getElementById("incName").value;
-    const amount = Number(document.getElementById("incAmount").value);
-    if (!name || isNaN(amount)) return;
-    const person = people.find(p => p.name === name);
-    if (person) {
-      person.given += amount;
+        table.innerHTML += row;
+      });
     }
-    document.getElementById("incName").value = "";
-    document.getElementById("incAmount").value = "";
+
+    function addPerson() {
+      const name = document.getElementById("addName").value.trim();
+      const amount = Number(document.getElementById("addAmount").value);
+      const date = document.getElementById("addDate").value || new Date().toISOString().split("T")[0];
+
+      // Validation
+      if (!name || isNaN(amount)) return;
+      const exists = people.some(person => person.name.toLowerCase() === name.toLowerCase());
+      if (exists) {
+        alert("This name already exists! Please enter a different name.");
+        return;
+      }
+      people.push({ name, given: amount, date, share: 0, balance: 0 });
+
+      // Reset input
+      document.getElementById("addName").value = "";
+      document.getElementById("addAmount").value = "";
+      document.getElementById("addDate").value = "";
+
+      updateSummary();
+    }
+
+    function increaseAmount() {
+      const name = document.getElementById("incName").value;
+      const amount = Number(document.getElementById("incAmount").value);
+      if (!name || isNaN(amount)) return;
+      const person = people.find(p => p.name === name);
+      if (person) {
+        person.given += amount;
+      }
+      document.getElementById("incName").value = "";
+      document.getElementById("incAmount").value = "";
+      updateSummary();
+    }
+
+    function addItem() {
+      const date = document.getElementById("itemDate").value;
+      const name = document.getElementById("itemName").value;
+      const amount = Number(document.getElementById("itemAmount").value);
+      const buyer = document.getElementById("purchasedBy").value;
+      if (!date || !name || isNaN(amount) || !buyer) return;
+
+      items.push({ date, name, amount, buyer });
+
+      document.getElementById("itemDate").value = "";
+      document.getElementById("itemName").value = "";
+      document.getElementById("itemAmount").value = "";
+      document.getElementById("purchasedBy").value = "";
+
+      updateSummary();
+    }
+
+    function removePerson(index) {
+      people.splice(index, 1);
+      updateSummary();
+    }
+
+    function removeItem(index) {
+      items.splice(index, 1);
+      updateSummary();
+    }
+
+    // Load data from localStorage on page load
     updateSummary();
-  }
-
-  function addItem() {
-    const date = document.getElementById("itemDate").value;
-    const name = document.getElementById("itemName").value;
-    const amount = Number(document.getElementById("itemAmount").value);
-    const buyer = document.getElementById("purchasedBy").value;
-    if (!date || !name || isNaN(amount) || !buyer) return;
-
-    items.push({ date, name, amount, buyer });
-
-    document.getElementById("itemDate").value = "";
-    document.getElementById("itemName").value = "";
-    document.getElementById("itemAmount").value = "";
-    document.getElementById("purchasedBy").value = "";
-
-    updateSummary();
-  }
-
-  function removePerson(index) {
-    people.splice(index, 1);
-    updateSummary();
-  }
-
-  function removeItem(index) {
-    items.splice(index, 1);
-    updateSummary();
-  }
-
-  // Load data from localStorage on page load
-  updateSummary();
-</script>
+  </script>
 
 </body>
 
