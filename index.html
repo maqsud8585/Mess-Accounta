@@ -9,8 +9,8 @@
 </head>
 
 <body class="bg-[url('./images/Bg-image.jpg')] bg-fixed min-h-screen p-6">
-  <img src="./images/Mess Accounta-logo.svg" alt="" class="w-28 sticky top-5 lg:sticky top-10">
-  <div class="bg-[#EEF8FF]/50 rounded-3xl w-full backdrop-blur border-2 border-white mt-5 lg:w-2/3 mx-auto p-6">
+  <img src="./images/Mess Accounta-logo.svg" alt="" class="fixed w-28 sm: w-24">
+  <div class="bg-[#EEF8FF]/50 rounded-3xl w-full  backdrop-blur border-2 border-white mt-5 lg:w-2/3 mx-auto p-6 ">
     <div class="max-w-6xl mx-auto">
       <!-- Summary Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -32,7 +32,7 @@
       <div class="bg-white rounded-2xl border border-[#FF8787] shadow overflow-hidden mb-6">
         <div class="max-h-40 overflow-y-auto">
           <table class="w-full border-collapse">
-            <thead class="sticky top-0 bg-[#79C9FA] text-left text-white z-10">
+            <thead class="sticky top-0 bg-orange-500 text-left text-white z-10">
               <tr>
                 <th class="p-2">Joining Date</th>
                 <th class="p-2">Name</th>
@@ -52,14 +52,14 @@
       <!-- Forms -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Add Person and Increase Amount -->
-        <div class="bg-white rounded-2xl shadow p-4 border border-[#005BA2]">
+        <div class="bg-white rounded-2xl shadow p-4 border border-orange-500">
           <h3 class="font-semibold mb-3">Add Person</h3>
           <div class="flex gap-2">
             <input id="addName" type="text" placeholder="Name" class="border p-2 rounded w-full">
             <input id="addAmount" type="number" placeholder="Amount" class="border p-2 rounded w-full">
             <input id="addDate" type="date" class="border p-2 rounded w-full">
             <button onclick="addPerson()"
-              class="bg-[#5D8A2B] text-white px-5 py-2 rounded hover:bg-green-600">Add</button>
+              class="bg-orange-500 text-white px-5 py-2 rounded hover:bg-orange-400">Add</button>
           </div>
 
           <h3 class="font-semibold mb-3 mt-5">Increase Amount</h3>
@@ -67,12 +67,12 @@
             <input id="incName" type="text" placeholder="Name" class="border p-2 rounded w-full">
             <input id="incAmount" type="number" placeholder="Amount" class="border p-2 rounded w-full">
             <button onclick="increaseAmount()"
-              class="bg-[#E9335C] text-white px-5 py-2 rounded hover:bg-pink-500">Add</button>
+              class="bg-orange-500 text-white px-5 py-2 rounded hover:bg-orange-400">Add</button>
           </div>
         </div>
 
         <!-- Add Item -->
-        <div class="bg-white rounded-2xl shadow p-4 border border-[#5D8A2B]">
+        <div class="bg-white rounded-2xl shadow p-4 border border-orange-500">
           <h3 class="font-semibold mb-3">Add Item</h3>
           <div class="grid gap-2">
             <input id="itemDate" type="date" class="border p-2 rounded">
@@ -86,10 +86,10 @@
         </div>
       </div>
       <!-- Items Table -->
-      <div class="bg-white rounded-2xl shadow mt-6 overflow-hidden border border-[#FF8787]">
-        <div class="max-h-40 overflow-y-auto">
+      <div class="bg-white rounded-2xl shadow mt-6 overflow-hidden border border-orange-500">
+        <div class="max-h-48 overflow-y-auto">
           <table class="w-full border-collapse">
-            <thead class="sticky top-0 bg-orange-100 text-left">
+            <thead class="sticky top-0 bg-orange-500 text-left text-white">
               <tr>
                 <th class="p-2">Date</th>
                 <th class="p-2">Item</th>
