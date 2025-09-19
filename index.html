@@ -6,6 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mess Accounta</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');
+    body {
+      font-family: "Roboto Condensed", sans-serif;
+    }
+    </style>
 </head>
 
 <body class="bg-[url('./images/Bg-image.jpg')] bg-fixed min-h-screen p-6">
@@ -14,25 +20,26 @@
     <div class="max-w-6xl mx-auto">
       <!-- Summary Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div class="bg-white rounded-2xl shadow p-4">
+        <div class="bg-white/10 backdrop-blur rounded-2xl shadow p-4 border-2 border-white">
           <p class="text-sm text-gray-500">Given Amount</p>
           <p id="givenAmount" class="text-xl font-semibold">₹0</p>
         </div>
-        <div class="bg-white rounded-2xl shadow p-4">
+        <div class="bg-white/10 backdrop-blur rounded-2xl shadow p-4 border-2 border-white">
           <p class="text-sm text-gray-500">Spent Amount</p>
           <p id="spentAmount" class="text-xl font-semibold text-red-600">₹0</p>
         </div>
-        <div class="bg-white rounded-2xl shadow p-4">
+        <div class="bg-white/10 backdrop-blur rounded-2xl shadow p-4 border-2 border-white">
           <p class="text-sm text-gray-500">Current Balance</p>
           <p id="currentAmount" class="text-xl font-semibold text-green-600">₹0</p>
         </div>
       </div>
 
       <!-- People Table -->
-      <div class="bg-white rounded-2xl border border-[#FF8787] shadow overflow-hidden mb-6">
-        <div class="max-h-40 overflow-y-auto">
+      <div class="bg-white/10 backdrop-blur border-2 border-white rounded-2xl  shadow overflow-hidden mb-6">
+        <div id="peopleTableWrapper" class="max-h-40 overflow-y-auto">
           <table class="w-full border-collapse">
-            <thead class="sticky top-0 bg-orange-500 text-left text-white z-10">
+            <thead id="peopleTableHead"
+              class="sticky top-0 bg-white/10 backdrop-blur  border-b border-orange-500 text-left text-gray-500 z-10">
               <tr>
                 <th class="p-2">Joining Date</th>
                 <th class="p-2">Name</th>
@@ -52,44 +59,51 @@
       <!-- Forms -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Add Person and Increase Amount -->
-        <div class="bg-white rounded-2xl shadow p-4 border border-orange-500">
+        <div class="bg-white/10 backdrop-blur  rounded-2xl shadow p-4 border-2 border-white">
           <h3 class="font-semibold mb-3">Add Person</h3>
           <div class="flex gap-2">
-            <input id="addName" type="text" placeholder="Name" class="border p-2 rounded w-full">
-            <input id="addAmount" type="number" placeholder="Amount" class="border p-2 rounded w-full">
-            <input id="addDate" type="date" class="border p-2 rounded w-full">
+            <input id="addName" type="text" placeholder="Name"
+              class="border p-2 rounded w-full bg-white/10 backdrop-blur">
+            <input id="addAmount" type="number" placeholder="Amount"
+              class="border p-2 rounded w-full bg-white/10 backdrop-blur">
+            <input id="addDate" type="date" class="border p-2 rounded w-full bg-white/10 backdrop-blur">
             <button onclick="addPerson()"
-              class="bg-orange-500 text-white px-5 py-2 rounded hover:bg-orange-400">Add</button>
+              class="bg-transparent border-2 border-orange-500 text-orange-500 px-5 py-2 rounded-2xl hover:shadow-[0_4px_12px_rgba(249,115,22,0.7)]">Add</button>
           </div>
 
           <h3 class="font-semibold mb-3 mt-5">Increase Amount</h3>
           <div class="flex gap-2">
-            <input id="incName" type="text" placeholder="Name" class="border p-2 rounded w-full">
-            <input id="incAmount" type="number" placeholder="Amount" class="border p-2 rounded w-full">
+            <input id="incName" type="text" placeholder="Name"
+              class="border p-2 rounded w-full bg-white/10 backdrop-blur">
+            <input id="incAmount" type="number" placeholder="Amount"
+              class="border p-2 rounded w-full bg-white/10 backdrop-blur">
             <button onclick="increaseAmount()"
-              class="bg-orange-500 text-white px-5 py-2 rounded hover:bg-orange-400">Add</button>
+              class="bg-transparent border-2 border-orange-500 text-orange-500 rounded-2xl  px-5 py-2 hover:shadow-[0_4px_12px_rgba(249,115,22,0.7)]">Add</button>
           </div>
         </div>
 
         <!-- Add Item -->
-        <div class="bg-white rounded-2xl shadow p-4 border border-orange-500">
+        <div class="bg-white/10 backdrop-blur rounded-2xl shadow p-4 border-2 border-white">
           <h3 class="font-semibold mb-3">Add Item</h3>
           <div class="grid gap-2">
-            <input id="itemDate" type="date" class="border p-2 rounded">
-            <input id="itemName" type="text" placeholder="Enter Item" class="border p-2 rounded">
-            <input id="itemAmount" type="number" placeholder="Enter Amount" class="border p-2 rounded">
-            <input id="purchasedBy" type="text" placeholder="Purchased By" class="border p-2 rounded">
-            <button onclick="addItem()"
-              class="bg-orange-500 text-white px-4 py-2 rounded mt-2 w-32 justify-self-center hover:bg-orange-400">Add
+            <input id="itemDate" type="date" class="border p-2 rounded bg-white/10 backdrop-blur">
+            <input id="itemName" type="text" placeholder="Enter Item"
+              class="border p-2 rounded bg-white/10 backdrop-blur">
+            <input id="itemAmount" type="number" placeholder="Enter Amount"
+              class="border p-2 rounded bg-white/10 backdrop-blur">
+            <input id="purchasedBy" type="text" placeholder="Purchased By"
+              class="border p-2 rounded bg-white/10 backdrop-blur">
+            <button onclick="addItem()" id="added-btn"
+              class="bg-transparent border-2 border-orange-500 text-orange-500 px-4 py-2 rounded-2xl mt-2 w-32 justify-self-center hover:shadow-[0_4px_12px_rgba(249,115,22,0.7)]">Add
               Item</button>
           </div>
         </div>
       </div>
       <!-- Items Table -->
-      <div class="bg-white rounded-2xl shadow mt-6 overflow-hidden border border-orange-500">
-        <div class="max-h-48 overflow-y-auto">
+      <div class="bg-white/10 backdrop-blur rounded-1xl shadow mt-6 overflow-hidden">
+        <div id="peopleTableWrapper2" class="max-h-48 overflow-y-auto">
           <table class="w-full border-collapse">
-            <thead class="sticky top-0 bg-orange-500 text-left text-white">
+            <thead id="peopleTableHead2" class="sticky top-0 bg-white/10 backdrop-blur text-left text-gray-500 border-b border-green-500">
               <tr>
                 <th class="p-2">Date</th>
                 <th class="p-2">Item</th>
@@ -106,6 +120,31 @@
   </div>
 
   <script>
+    const wrapper = document.getElementById("peopleTableWrapper");
+    const thead = document.getElementById("peopleTableHead");
+
+    wrapper.addEventListener("scroll", () => {
+      if (wrapper.scrollTop > 0) {
+        thead.classList.remove("bg-white/10");
+        thead.classList.add("bg-white/100");
+      } else {
+        thead.classList.remove("bg-white/100");
+        thead.classList.add("bg-white/10");
+      }
+    });
+
+    const wrapper2 = document.getElementById("peopleTableWrapper2");
+    const thead2 = document.getElementById("peopleTableHead2");
+    wrapper2.addEventListener("scroll", () => {
+      if (wrapper2.scrollTop > 0) {
+        thead2.classList.remove("bg-white/10");
+        thead2.classList.add("bg-white/100"); 
+      } else {
+        thead2.classList.remove("bg-white/100");
+        thead2.classList.add("bg-white/10");
+      }
+    });
+
     let people = JSON.parse(localStorage.getItem("people")) || [];
     let items = JSON.parse(localStorage.getItem("items")) || [];
 
@@ -132,21 +171,36 @@
       if (people.length === 0) return;
 
       people.forEach(p => {
-        const eligibleItems = items.filter(
-          i => new Date(i.date) >= new Date(p.date)
-        );
-        const totalEligibleSpent = eligibleItems.reduce((sum, i) => sum + (i.amount || 0), 0);
         let totalShare = 0;
+
+        // Get items that fall within this person's active period
+        const eligibleItems = items.filter(item => {
+          const itemDate = new Date(item.date);
+          const joinDate = new Date(p.date);
+          const leaveDate = p.leaveDate ? new Date(p.leaveDate) : null;
+
+          return itemDate >= joinDate && (!leaveDate || itemDate <= leaveDate);
+        });
+
         eligibleItems.forEach(item => {
-          const eligibleMembers = people.filter(
-            person => new Date(person.date) <= new Date(item.date)
-          );
+          const eligibleMembers = people.filter(person => {
+            const joinDate = new Date(person.date);
+            const leaveDate = person.leaveDate ? new Date(person.leaveDate) : null;
+            const itemDate = new Date(item.date);
+
+            return (
+              joinDate <= itemDate &&
+              (!leaveDate || itemDate <= leaveDate)
+            );
+          });
+
           const itemShare = item.amount / eligibleMembers.length;
           totalShare += itemShare;
         });
 
-        p.share = Math.round(totalShare);
-        p.balance = Math.round((p.given || 0) - totalShare);
+        // Avoid rounding error mismatch
+        p.share = parseFloat(totalShare.toFixed(2));
+        p.balance = parseFloat(((p.given || 0) - totalShare).toFixed(2));
       });
 
       renderPeople();
@@ -165,7 +219,8 @@
           ${p.balance >= 0 ? "+" : ""}${p.balance || 0}
         </td>
         <td class="p-2">
-          <button onclick="removePerson(${index})" class="text-red-600 hover:underline">Remove</button>
+          <button onclick="setLeaveDate(${index})" class="text-blue-600 hover:underline">Set Leave</button>
+          <button onclick="removePerson(${index})" class="text-red-600 ml-3 hover:underline">Remove</button>
         </td>
       </tr>`;
         table.innerHTML += row;
@@ -192,16 +247,16 @@
     function addPerson() {
       const name = document.getElementById("addName").value.trim();
       const amount = Number(document.getElementById("addAmount").value);
-      const date = document.getElementById("addDate").value || new Date().toISOString().split("T")[0];
+      const date = document.getElementById("addDate").value;
 
       // Validation
-      if (!name || isNaN(amount)) return;
+      if (!name || isNaN(amount) || !date) return;
       const exists = people.some(person => person.name.toLowerCase() === name.toLowerCase());
       if (exists) {
         alert("This name already exists! Please enter a different name.");
         return;
       }
-      people.push({ name, given: amount, date, share: 0, balance: 0 });
+      people.push({ name, given: amount, date, share: 0, balance: 0, leaveDate: null });
 
       // Reset input
       document.getElementById("addName").value = "";
@@ -218,6 +273,8 @@
       const person = people.find(p => p.name === name);
       if (person) {
         person.given += amount;
+      } else {
+        alert("Person not found!");
       }
       document.getElementById("incName").value = "";
       document.getElementById("incAmount").value = "";
@@ -239,9 +296,22 @@
       document.getElementById("purchasedBy").value = "";
 
       updateSummary();
+      document.getElementById("added-btn").innerText = "Added!";
+      setTimeout(() => {
+        document.getElementById("added-btn").innerText = "Add Item";
+      }, 2000);
+    }
+
+    function setLeaveDate(index) {
+      const leaveDate = prompt("Enter leave date (YYYY-MM-DD):");
+      if (leaveDate) {
+        people[index].leaveDate = leaveDate;
+        updateSummary();
+      }
     }
 
     function removePerson(index) {
+      if (!confirm("Are you sure you want to remove this person?")) return;
       people.splice(index, 1);
       updateSummary();
     }
@@ -254,6 +324,7 @@
     // Load data from localStorage on page load
     updateSummary();
   </script>
+
 
 </body>
 
