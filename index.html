@@ -8,38 +8,43 @@
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');
+
     body {
       font-family: "Roboto Condensed", sans-serif;
     }
-    </style>
+  </style>
 </head>
 
-<body class="bg-[url('./images/Bg-image.jpg')] bg-fixed min-h-screen p-6">
-  <img src="./images/Mess Accounta-logo.svg" alt="" class="fixed w-28 sm: w-24">
-  <div class="bg-[#EEF8FF]/50 rounded-3xl w-full  backdrop-blur border-2 border-white mt-5 lg:w-2/3 mx-auto p-6 ">
+<body class="bg-[url('./images/Bg-image.jpg')] bg-fixed min-h-screen p-3 sm:p-6">
+  <!-- Logo -->
+  <img src="./images/Mess Accounta-logo.svg" alt="Logo" class="fixed w-20 sm:w-24 md:w-28">
+
+  <div
+    class="bg-[#EEF8FF]/40 rounded-2xl w-full backdrop-blur-sm sm:backdrop-blur-md border border-white/60 mt-16 sm:mt-5 lg:w-2/3 mx-auto p-4 sm:p-6 shadow-lg">
     <div class="max-w-6xl mx-auto">
+
       <!-- Summary Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div class="bg-white/10 backdrop-blur rounded-2xl shadow p-4 border-2 border-white">
-          <p class="text-sm text-gray-500">Given Amount</p>
-          <p id="givenAmount" class="text-xl font-semibold">₹0</p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
+        <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/50 text-center sm:text-left">
+          <p class="text-xs sm:text-sm text-gray-600">Given Amount</p>
+          <p id="givenAmount" class="text-lg sm:text-xl font-semibold">₹0</p>
         </div>
-        <div class="bg-white/10 backdrop-blur rounded-2xl shadow p-4 border-2 border-white">
-          <p class="text-sm text-gray-500">Spent Amount</p>
-          <p id="spentAmount" class="text-xl font-semibold text-red-600">₹0</p>
+        <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/50 text-center sm:text-left">
+          <p class="text-xs sm:text-sm text-gray-600">Spent Amount</p>
+          <p id="spentAmount" class="text-lg sm:text-xl font-semibold text-red-600">₹0</p>
         </div>
-        <div class="bg-white/10 backdrop-blur rounded-2xl shadow p-4 border-2 border-white">
-          <p class="text-sm text-gray-500">Current Balance</p>
-          <p id="currentAmount" class="text-xl font-semibold text-green-600">₹0</p>
+        <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/50 text-center sm:text-left">
+          <p class="text-xs sm:text-sm text-gray-600">Current Balance</p>
+          <p id="currentAmount" class="text-lg sm:text-xl font-semibold text-green-600">₹0</p>
         </div>
       </div>
 
       <!-- People Table -->
-      <div class="bg-white/10 backdrop-blur border-2 border-white rounded-2xl  shadow overflow-hidden mb-6">
-        <div id="peopleTableWrapper" class="max-h-40 overflow-y-auto">
-          <table class="w-full border-collapse">
+      <div class="bg-white/20 backdrop-blur-sm border border-white/50 rounded-xl shadow overflow-hidden mb-6">
+        <div id="peopleTableWrapper" class="overflow-x-auto max-h-48 sm:max-h-60">
+          <table class="w-full text-sm sm:text-base">
             <thead id="peopleTableHead"
-              class="sticky top-0 bg-white/10 backdrop-blur  border-b border-orange-500 text-left text-gray-500 z-10">
+              class="sticky top-0 bg-white/40 backdrop-blur-sm border-b border-orange-400 text-gray-700 z-10">
               <tr>
                 <th class="p-2">Joining Date</th>
                 <th class="p-2">Name</th>
@@ -52,58 +57,60 @@
             <tbody id="peopleTable"></tbody>
           </table>
         </div>
-
       </div>
-
 
       <!-- Forms -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Add Person and Increase Amount -->
-        <div class="bg-white/10 backdrop-blur  rounded-2xl shadow p-4 border-2 border-white">
-          <h3 class="font-semibold mb-3">Add Person</h3>
-          <div class="flex gap-2">
+
+        <!-- Add Person + Increase Amount -->
+        <div class="bg-white/20 backdrop-blur-sm rounded-xl shadow p-4 border border-white/50">
+          <h3 class="font-semibold mb-3 text-center sm:text-left">Add Person</h3>
+          <div class="flex flex-col sm:flex-row gap-2">
             <input id="addName" type="text" placeholder="Name"
-              class="border p-2 rounded w-full bg-white/10 backdrop-blur">
+              class="border p-2 rounded w-full bg-white/30 focus:ring-2 focus:ring-orange-400">
             <input id="addAmount" type="number" placeholder="Amount"
-              class="border p-2 rounded w-full bg-white/10 backdrop-blur">
-            <input id="addDate" type="date" class="border p-2 rounded w-full bg-white/10 backdrop-blur">
+              class="border p-2 rounded w-full bg-white/30 focus:ring-2 focus:ring-orange-400">
+            <input id="addDate" type="date"
+              class="border p-2 rounded w-full bg-white/30 focus:ring-2 focus:ring-orange-400">
             <button onclick="addPerson()"
-              class="bg-transparent border-2 border-orange-500 text-orange-500 px-5 py-2 rounded-2xl hover:shadow-[0_4px_12px_rgba(249,115,22,0.7)]">Add</button>
+              class="bg-transparent border-2 border-orange-500 text-orange-500 px-4 py-2 rounded-xl hover:shadow-[0_4px_12px_rgba(249,115,22,0.7)] transition w-full sm:w-auto">Add</button>
           </div>
 
-          <h3 class="font-semibold mb-3 mt-5">Increase Amount</h3>
-          <div class="flex gap-2">
+          <h3 class="font-semibold mb-3 mt-5 text-center sm:text-left">Increase Amount</h3>
+          <div class="flex flex-col sm:flex-row gap-2">
             <input id="incName" type="text" placeholder="Name"
-              class="border p-2 rounded w-full bg-white/10 backdrop-blur">
+              class="border p-2 rounded w-full bg-white/30 focus:ring-2 focus:ring-orange-400">
             <input id="incAmount" type="number" placeholder="Amount"
-              class="border p-2 rounded w-full bg-white/10 backdrop-blur">
+              class="border p-2 rounded w-full bg-white/30 focus:ring-2 focus:ring-orange-400">
             <button onclick="increaseAmount()"
-              class="bg-transparent border-2 border-orange-500 text-orange-500 rounded-2xl  px-5 py-2 hover:shadow-[0_4px_12px_rgba(249,115,22,0.7)]">Add</button>
+              class="bg-transparent border-2 border-orange-500 text-orange-500 px-4 py-2 rounded-xl hover:shadow-[0_4px_12px_rgba(249,115,22,0.7)] transition w-full sm:w-auto">Add</button>
           </div>
         </div>
 
         <!-- Add Item -->
-        <div class="bg-white/10 backdrop-blur rounded-2xl shadow p-4 border-2 border-white">
-          <h3 class="font-semibold mb-3">Add Item</h3>
+        <div class="bg-white/20 backdrop-blur-sm rounded-xl shadow p-4 border border-white/50">
+          <h3 class="font-semibold mb-3 text-center sm:text-left">Add Item</h3>
           <div class="grid gap-2">
-            <input id="itemDate" type="date" class="border p-2 rounded bg-white/10 backdrop-blur">
+            <input id="itemDate" type="date" class="border p-2 rounded bg-white/30 focus:ring-2 focus:ring-orange-400">
             <input id="itemName" type="text" placeholder="Enter Item"
-              class="border p-2 rounded bg-white/10 backdrop-blur">
+              class="border p-2 rounded bg-white/30 focus:ring-2 focus:ring-orange-400">
             <input id="itemAmount" type="number" placeholder="Enter Amount"
-              class="border p-2 rounded bg-white/10 backdrop-blur">
+              class="border p-2 rounded bg-white/30 focus:ring-2 focus:ring-orange-400">
             <input id="purchasedBy" type="text" placeholder="Purchased By"
-              class="border p-2 rounded bg-white/10 backdrop-blur">
-            <button onclick="addItem()" id="added-btn"
-              class="bg-transparent border-2 border-orange-500 text-orange-500 px-4 py-2 rounded-2xl mt-2 w-32 justify-self-center hover:shadow-[0_4px_12px_rgba(249,115,22,0.7)]">Add
+              class="border p-2 rounded bg-white/30 focus:ring-2 focus:ring-orange-400">
+            <button onclick="addItem()"
+              id="added-btn" class="bg-transparent border-2 border-orange-500 text-orange-500 px-4 py-2 rounded-xl mt-2 hover:shadow-[0_4px_12px_rgba(249,115,22,0.7)] transition w-full sm:w-auto justify-self-center">Add
               Item</button>
           </div>
         </div>
       </div>
+
       <!-- Items Table -->
-      <div class="bg-white/10 backdrop-blur rounded-1xl shadow mt-6 overflow-hidden">
-        <div id="peopleTableWrapper2" class="max-h-48 overflow-y-auto">
-          <table class="w-full border-collapse">
-            <thead id="peopleTableHead2" class="sticky top-0 bg-white/10 backdrop-blur text-left text-gray-500 border-b border-green-500">
+      <div class="bg-white/20 backdrop-blur-sm rounded-xl shadow mt-6 overflow-hidden">
+        <div id="peopleTableWrapper2" class="overflow-x-auto max-h-48 sm:max-h-60">
+          <table class="w-full text-sm sm:text-base">
+            <thead id="peopleTableHead2"
+              class="sticky top-0 bg-white/40 backdrop-blur-sm border-b border-green-400 text-gray-700">
               <tr>
                 <th class="p-2">Date</th>
                 <th class="p-2">Item</th>
@@ -138,7 +145,7 @@
     wrapper2.addEventListener("scroll", () => {
       if (wrapper2.scrollTop > 0) {
         thead2.classList.remove("bg-white/10");
-        thead2.classList.add("bg-white/100"); 
+        thead2.classList.add("bg-white/100");
       } else {
         thead2.classList.remove("bg-white/100");
         thead2.classList.add("bg-white/10");
