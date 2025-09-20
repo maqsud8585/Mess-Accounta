@@ -75,7 +75,6 @@
             <button onclick="addPerson()"
               class="bg-transparent border-2 border-orange-500 text-orange-500 px-4 py-2 rounded-xl hover:shadow-[0_4px_12px_rgba(249,115,22,0.7)] transition w-full sm:w-auto">Add</button>
           </div>
-
           <h3 class="font-semibold mb-3 mt-5 text-center sm:text-left">Increase Amount</h3>
           <div class="flex flex-col sm:flex-row gap-2">
             <input id="incName" type="text" placeholder="Name"
@@ -83,7 +82,16 @@
             <input id="incAmount" type="number" placeholder="Amount"
               class="border p-2 rounded w-full bg-white/30 focus:ring-2 focus:ring-orange-400">
             <button onclick="increaseAmount()"
-              class="bg-transparent border-2 border-orange-500 text-orange-500 px-4 py-2 rounded-xl hover:shadow-[0_4px_12px_rgba(249,115,22,0.7)] transition w-full sm:w-auto">Add</button>
+              class="bg-transparent border-2 border-green-500 text-green-500 px-4 py-2 rounded-xl hover:shadow-[0_4px_12px_rgba(249,115,22,0.7)] transition w-full sm:w-auto">Add</button>
+          </div>
+          <h3 class="font-semibold mb-3 mt-5 text-center sm:text-left">Decrease Amount</h3>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input id="incName" type="text" placeholder="Name"
+              class="border p-2 rounded w-full bg-white/30 focus:ring-2 focus:ring-orange-400">
+            <input id="incAmount" type="number" placeholder="Amount"
+              class="border p-2 rounded w-full bg-white/30 focus:ring-2 focus:ring-orange-400">
+            <button onclick="decreaseAmount()"
+              class="bg-transparent border-2 border-red-500 text-red-500 px-4 py-2 rounded-xl hover:shadow-[0_4px_12px_rgba(249,115,22,0.7)] transition w-full sm:w-auto">Sub</button>
           </div>
         </div>
 
@@ -98,8 +106,8 @@
               class="border p-2 rounded bg-white/30 focus:ring-2 focus:ring-orange-400">
             <input id="purchasedBy" type="text" placeholder="Purchased By"
               class="border p-2 rounded bg-white/30 focus:ring-2 focus:ring-orange-400">
-            <button onclick="addItem()"
-              id="added-btn" class="bg-transparent border-2 border-orange-500 text-orange-500 px-4 py-2 rounded-xl mt-2 hover:shadow-[0_4px_12px_rgba(249,115,22,0.7)] transition w-full sm:w-auto justify-self-center">Add
+            <button onclick="addItem()" id="added-btn"
+              class="bg-transparent border-2 border-orange-500 text-orange-500 px-4 py-2 rounded-xl mt-2 hover:shadow-[0_4px_12px_rgba(249,115,22,0.7)] transition w-full sm:w-auto justify-self-center">Add
               Item</button>
           </div>
         </div>
@@ -121,6 +129,37 @@
             </thead>
             <tbody id="itemsTable"></tbody>
           </table>
+        </div>
+      </div>
+      <!-- Settlement Button -->
+      <div class="text-center mt-4">
+        <button onclick="openSettlement()"
+          class="bg-transparent border-2 border-purple-500 text-purple-500 px-6 py-2 rounded-xl hover:shadow-[0_4px_12px_rgba(168,85,247,0.7)] transition">
+          Settlement
+        </button>
+      </div>
+
+      <!-- Settlement Popup -->
+      <div id="settlementModal"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
+        <div class="bg-white/90 rounded-2xl shadow-lg p-6 w-11/12 sm:w-2/3 lg:w-1/2">
+          <h2 class="text-lg font-semibold mb-4 text-center">Settlement Details</h2>
+          <table class="w-full border border-gray-300 rounded-lg overflow-hidden">
+            <thead class="bg-gray-200 text-gray-700">
+              <tr>
+                <th class="p-2">Name</th>
+                <th class="p-2">Balance</th>
+                <th class="p-2">Status</th>
+              </tr>
+            </thead>
+            <tbody id="settlementTable" class="text-center"></tbody>
+          </table>
+          <div class="text-center mt-4">
+            <button onclick="closeSettlement()"
+              class="bg-red-500 text-white px-6 py-2 rounded-xl hover:bg-red-600 transition">
+              Close
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -288,6 +327,26 @@
       updateSummary();
     }
 
+    function decreaseAmount() {
+      const name = document.querySelectorAll("#incName")[1].value;
+      const amount = Number(document.querySelectorAll("#incAmount")[1].value);
+      if (!name || isNaN(amount)) return;
+
+      const person = people.find(p => p.name === name);
+      if (person) {
+        if (person.given >= amount) {
+          person.given -= amount;
+        } else {
+          alert("Amount is greater than available balance!");
+        }
+      } else {
+        alert("Person not found!");
+      }
+
+      document.querySelectorAll("#incName")[1].value = "";
+      document.querySelectorAll("#incAmount")[1].value = "";
+      updateSummary();
+    }
     function addItem() {
       const date = document.getElementById("itemDate").value;
       const name = document.getElementById("itemName").value;
@@ -328,6 +387,143 @@
       updateSummary();
     }
 
+    // Open Settlement Popup
+    function openSettlement() {
+      // create modal
+      const modal = document.createElement("div");
+      modal.className = "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
+      modal.innerHTML = `
+    <div class="bg-white rounded-xl p-6 w-11/12 sm:w-2/3 lg:w-1/2 shadow-xl">
+      <h2 class="text-lg sm:text-xl font-semibold mb-4 text-center">Settlement Details</h2>
+
+      <div class="overflow-x-auto mb-4">
+        <table class="w-full border-collapse rounded-lg overflow-hidden shadow-sm">
+          <thead class="bg-gray-100 text-gray-700 text-sm sm:text-base">
+            <tr>
+              <th class="p-3 border">From</th>
+              <th class="p-3 border">To</th>
+              <th class="p-3 border">Amount</th>
+            </tr>
+          </thead>
+          <tbody id="settlementBody" class="text-center text-sm sm:text-base divide-y"></tbody>
+        </table>
+      </div>
+
+      <div id="kittySection" class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <h3 class="font-semibold text-blue-700 mb-2">Remaining Balance</h3>
+        <p id="kittyInfo" class="text-gray-700 mb-2"></p>
+        <div id="kittyResult" class="text-gray-800 text-sm sm:text-base"></div>
+      </div>
+
+      <div class="mt-6 text-center">
+        <button id="closeSettlement" class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg">Close</button>
+      </div>
+    </div>
+  `;
+
+      document.body.appendChild(modal);
+
+      const tbody = modal.querySelector("#settlementBody");
+      const kittyInfo = modal.querySelector("#kittyInfo");
+      const kittyResult = modal.querySelector("#kittyResult");
+
+      // --- compute correct totals
+      const totalGiven = people.reduce((s, p) => s + (Number(p.given) || 0), 0);
+      const totalSpent = items.reduce((s, it) => s + (Number(it.amount) || 0), 0);
+      const kittyBalance = parseFloat((totalGiven - totalSpent).toFixed(2)); // correct kitty
+
+      // --- settlement matching (use copies so original balances not mutated)
+      const creditors = people
+        .filter(p => Number(p.balance) > 0)
+        .map(p => ({ name: p.name, balance: parseFloat(Number(p.balance).toFixed(2)) }));
+
+      const debtors = people
+        .filter(p => Number(p.balance) < 0)
+        .map(p => ({ name: p.name, balance: parseFloat(Math.abs(Number(p.balance)).toFixed(2)) })); // positive debt
+
+      const settlements = [];
+
+      for (let d of debtors) {
+        let debtLeft = d.balance;
+        for (let c of creditors) {
+          if (debtLeft <= 0) break;
+          if (c.balance <= 0) continue;
+
+          let settle = Math.min(debtLeft, c.balance);
+          settle = parseFloat(settle.toFixed(2));
+          if (settle > 0) {
+            settlements.push({ from: d.name, to: c.name, amount: settle });
+            c.balance = parseFloat((c.balance - settle).toFixed(2));
+            debtLeft = parseFloat((debtLeft - settle).toFixed(2));
+          }
+        }
+      }
+
+      // render settlement rows
+      if (settlements.length) {
+        settlements.forEach(s => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+        <td class="p-3 border">${s.from}</td>
+        <td class="p-3 border">${s.to}</td>
+        <td class="p-3 border">₹${s.amount.toFixed(2)}</td>
+      `;
+          tbody.appendChild(tr);
+        });
+      } else {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="3" class="p-3 text-gray-500 text-center">No settlements needed</td>`;
+        tbody.appendChild(tr);
+      }
+
+      // --- KITTY: show correct kitty and distribution
+      kittyInfo.textContent = `Total Given: ₹${totalGiven.toFixed(2)} • Total Spent: ₹${totalSpent.toFixed(2)} • Remaining: ₹${kittyBalance.toFixed(2)}`;
+
+      // Calculate kitty distribution (contributor based only)
+      kittyResult.innerHTML = "";
+      if (kittyBalance <= 0) {
+        kittyResult.innerHTML = `<p class="text-gray-600">No extra money left.</p>`;
+      } else {
+        // contributor-based: distribute only among people who are STILL creditors AFTER settlements
+        // Calculate balances after settlements
+        const balancesAfterSettlement = {};
+        people.forEach(p => {
+          balancesAfterSettlement[p.name] = Number(p.balance);
+        });
+
+        // Apply settlements to balances
+        settlements.forEach(s => {
+          balancesAfterSettlement[s.from] += s.amount; // debtors get less negative
+          balancesAfterSettlement[s.to] -= s.amount;   // creditors get less positive
+        });
+
+        // Get people who are still creditors (positive balance after settlements)
+        const remainingCreditors = people.filter(p => balancesAfterSettlement[p.name] > 0);
+        const totalPositiveAfterSettlement = remainingCreditors.reduce((s, c) => s + balancesAfterSettlement[c.name], 0);
+
+        if (remainingCreditors.length === 0 || totalPositiveAfterSettlement <= 0) {
+          kittyResult.innerHTML = `<p class="text-gray-600">No creditors remaining after settlements.</p>`;
+        } else {
+          // Distribute kitty based on remaining positive balances
+          let assigned = 0;
+          remainingCreditors.forEach((c, idx) => {
+            const shareRaw = (balancesAfterSettlement[c.name] / totalPositiveAfterSettlement) * kittyBalance;
+
+            if (idx < remainingCreditors.length - 1) {
+              const share = parseFloat(shareRaw.toFixed(2));
+              kittyResult.innerHTML += `<p>${c.name} gets back <strong>₹${share.toFixed(2)}</strong></p>`;
+              assigned += share;
+            } else {
+              const last = parseFloat((kittyBalance - assigned).toFixed(2));
+              kittyResult.innerHTML += `<p>${c.name} gets back <strong>₹${last.toFixed(2)}</strong></p>`;
+            }
+          });
+        }
+      }
+
+      // close handler
+      modal.querySelector("#closeSettlement").addEventListener("click", () => modal.remove());
+    }
     // Load data from localStorage on page load
     updateSummary();
   </script>
