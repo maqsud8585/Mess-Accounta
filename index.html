@@ -108,7 +108,8 @@
         <div class="bg-white/20 backdrop-blur-sm rounded-xl shadow p-4 border border-white/50">
           <h3 class="font-semibold mb-3 text-center sm:text-left">Add Item</h3>
           <div class="grid gap-2">
-            <input id="itemDate" type="date" placeholder="Date" class="border p-2 rounded bg-white/30 focus:ring-2 focus:ring-orange-400">
+            <input id="itemDate" type="text" placeholder="Date" onfocus="(this.type='date')"
+              class="border p-2 rounded bg-white/30 focus:ring-2 focus:ring-orange-400 w-full">
             <input id="itemName" type="text" placeholder="Enter Item"
               class="border p-2 rounded bg-white/30 focus:ring-2 focus:ring-orange-400">
             <input id="itemAmount" type="number" placeholder="Enter Amount"
