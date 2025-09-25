@@ -11,36 +11,61 @@
 
     body {
       font-family: "Roboto Condensed", sans-serif;
+      color: #ffffff;
     }
+
+    /* Glow / shine animation */
+    @keyframes shine {
+      0% {
+        transform: translateX(-100%);
+      }
+
+      100% {
+        transform: translateX(100%);
+      }
+    }
+
+    .shine-effect {
+      animation: shine 2s linear infinite;
+    }
+
+    /* Stop animation on hover */
+    .glow-btn:hover .shine-effect {
+      animation-play-state: paused;
+    }
+      input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(50%) sepia(100%) saturate(500%) hue-rotate(10deg);
+    cursor: pointer;
+  }
   </style>
 </head>
 
-<body class="bg-[url('./images/Bg-image.jpg')] bg-fixed min-h-screen p-3 sm:p-6">
+<body class="bg-black p-3 sm:p-6">
   <!-- Logo -->
   <img src="./images/Mess Accounta-logo.svg" alt="Logo" class="fixed w-20 sm:w-24 md:w-28">
 
   <div
-    class="bg-[#EEF8FF]/40 rounded-2xl w-full backdrop-blur-sm sm:backdrop-blur-md border border-white/60 mt-16 sm:mt-5 lg:w-2/3 mx-auto p-4 sm:p-6 shadow-lg">
+    class="bg-[#151515] border border-white/10 rounded-2xl w-full backdrop-blur-sm sm:border border-black mt-16 sm:mt-5 lg:w-2/3 mx-auto p-4 sm:p-6 shadow-lg">
     <div class="max-w-6xl mx-auto">
 
       <!-- Summary Cards -->
       <div class="grid grid-cols-3 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
-        <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/50 text-center sm:text-left">
-          <p class="text-xs sm:text-sm text-gray-600">
+        <div class="rounded-xl p-4 border border-white/20 text-center sm:text-left">
+          <p class="text-xs sm:text-sm text-white-400">
             <span class="inline sm:hidden">Given</span>
             <span class="hidden sm:inline">Given Amount</span>
           </p>
           <p id="givenAmount" class="text-lg sm:text-xl font-semibold">₹0</p>
         </div>
-        <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/50 text-center sm:text-left">
-          <p class="text-xs sm:text-sm text-gray-600">
+        <div class="rounded-xl p-4 border border-white/20 text-center sm:text-left">
+          <p class="text-xs sm:text-sm text-white-400">
             <span class="inline sm:hidden">Spent</span>
             <span class="hidden sm:inline">Spent Amount</span>
           </p>
-          <p id="spentAmount" class="text-lg sm:text-xl font-semibold text-red-600">₹0</p>
+          <p id="spentAmount" class="text-lg sm:text-xl font-semibold text-red-500">₹0</p>
         </div>
-        <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/50 text-center sm:text-left">
-          <p class="text-xs sm:text-sm text-gray-600">
+        <div class="rounded-xl p-4 border border-white/20 text-center sm:text-left">
+          <p class="text-xs sm:text-sm text-white-400">
             <span class="inline sm:hidden">Current</span>
             <span class="hidden sm:inline">Current Amount</span>
           </p>
@@ -49,11 +74,10 @@
       </div>
 
       <!-- People Table -->
-      <div class="bg-white/20 backdrop-blur-sm border border-white/50 rounded-xl shadow overflow-hidden mb-6">
+      <div class="border border-white/20 rounded-xl shadow overflow-hidden mb-6">
         <div id="peopleTableWrapper" class="overflow-x-auto max-h-48 sm:max-h-60">
           <table class="w-full text-sm sm:text-base">
-            <thead id="peopleTableHead"
-              class="sticky top-0 bg-white/40 backdrop-blur-sm border-b border-orange-400 text-gray-700 z-10">
+            <thead id="peopleTableHead" class="sticky top-0 bg-[#222222] text-white-400 z-10">
               <tr>
                 <th class="p-2">Joining Date</th>
                 <th class="p-2">Name</th>
@@ -72,63 +96,73 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
         <!-- Add Person + Increase Amount -->
-        <div class="hidden sm:block bg-white/20 backdrop-blur-sm rounded-xl shadow p-4 border border-white/50">
+        <div class="hidden sm:block rounded-xl shadow p-4 border border-white/10">
           <h3 class="font-semibold mb-3 text-center sm:text-left">Add Person</h3>
           <div class="flex flex-col sm:flex-row gap-2">
             <input id="addName" type="text" placeholder="Name"
-              class="border p-2 rounded w-full bg-white/30 focus:ring-2 focus:ring-orange-400">
+              class="border border-white/20 p-2 rounded w-full focus:outline-none">
             <input id="addAmount" type="number" placeholder="Amount"
-              class="border p-2 rounded w-full bg-white/30 focus:ring-2 focus:ring-orange-400">
-            <input id="addDate" type="date"
-              class="border p-2 rounded w-full bg-white/30 focus:ring-2 focus:ring-orange-400">
+              class="border border-white/20 p-2 rounded w-full focus:outline-none">
+            <input id="addDate" type="date" class="border border-white/20 p-2 rounded w-full focus:outline-none">
             <button onclick="addPerson()"
-              class="bg-transparent border-2 border-orange-500 text-orange-500 px-4 py-2 rounded-xl hover:shadow-[0_4px_12px_rgba(249,115,22,0.7)] transition w-full sm:w-auto">Add</button>
+              class="bg-[#FFFFFF]/10 backdrop-blur-lg border border-[#FFFFFF]/20 text-white-400 px-4 py-2 rounded-xl hover:bg-[#FFFFFF]/20 transition w-full sm:w-auto">Add</button>
           </div>
           <h3 class="font-semibold mb-3 mt-5 text-center sm:text-left">Increase Amount</h3>
           <div class="flex flex-col sm:flex-row gap-2">
             <input id="incName" type="text" placeholder="Name"
-              class="border p-2 rounded w-full bg-white/30 focus:ring-2 focus:ring-orange-400">
+              class="border border-white/20 p-2 rounded w-full focus:outline-none">
             <input id="incAmount" type="number" placeholder="Amount"
-              class="border p-2 rounded w-full bg-white/30 focus:ring-2 focus:ring-orange-400">
+              class="border border-white/20 p-2 rounded w-full focus:outline-none">
             <button onclick="increaseAmount()"
-              class="bg-transparent border-2 border-green-500 text-green-500 px-4 py-2 rounded-xl hover:shadow-[0_4px_12px_rgba(249,115,22,0.7)] transition w-full sm:w-auto">Add</button>
+              class="bg-transparent border border-[#0B8112]/30 text-green-400 px-3 py-1 rounded-xl hover:shadow-[0_4px_12px_rgba(16,195,28,0.7)] transition w-full sm:w-auto">
+              <img src="./images/increase.png" alt="" srcset="" height="18" width="80"></button>
           </div>
           <h3 class="font-semibold mb-3 mt-5 text-center sm:text-left">Decrease Amount</h3>
           <div class="flex flex-col sm:flex-row gap-2">
             <input id="incName" type="text" placeholder="Name"
-              class="border p-2 rounded w-full bg-white/30 focus:ring-2 focus:ring-orange-400">
+              class="border border-white/20 p-2 rounded w-full focus:outline-none">
             <input id="incAmount" type="number" placeholder="Amount"
-              class="border p-2 rounded w-full bg-white/30 focus:ring-2 focus:ring-orange-400">
+              class="border border-white/20 p-2 rounded w-full focus:outline-none">
             <button onclick="decreaseAmount()"
-              class="bg-transparent border-2 border-red-500 text-red-500 px-4 py-2 rounded-xl hover:shadow-[0_4px_12px_rgba(249,115,22,0.7)] transition w-full sm:w-auto">Sub</button>
+              class="bg-transparent border border-[#A93A0B]/30  text-red-500 px-3 py-1 rounded-xl hover:shadow-[0_4px_12px_rgba(158,56,13,0.7)] transition w-full sm:w-auto"><img
+                src="./images/decrease.png" alt="" srcset="" height="18" width="80"></button>
           </div>
         </div>
 
         <!-- Add Item -->
-        <div class="bg-white/20 backdrop-blur-sm rounded-xl shadow p-4 border border-white/50">
+        <div class="rounded-xl shadow p-4 border border-white/20 border-dashed">
           <h3 class="font-semibold mb-3 text-center sm:text-left">Add Item</h3>
           <div class="grid gap-2">
             <input id="itemDate" type="text" placeholder="Date" onfocus="(this.type='date')"
-              class="border p-2 rounded bg-white/30 focus:ring-2 focus:ring-orange-400 w-full">
+              class="border border-white/20 p-2 rounded w-full focus:outline-none">
             <input id="itemName" type="text" placeholder="Enter Item"
-              class="border p-2 rounded bg-white/30 focus:ring-2 focus:ring-orange-400">
+              class="border border-white/20 p-2 rounded focus:outline-none">
             <input id="itemAmount" type="number" placeholder="Enter Amount"
-              class="border p-2 rounded bg-white/30 focus:ring-2 focus:ring-orange-400">
+              class="border border-white/20 p-2 rounded focus:outline-none">
             <input id="purchasedBy" type="text" placeholder="Purchased By"
-              class="border p-2 rounded bg-white/30 focus:ring-2 focus:ring-orange-400">
-            <button onclick="addItem()" id="added-btn"
-              class="bg-transparent border-2 border-orange-500 text-orange-500 px-4 py-2 rounded-xl mt-2 hover:shadow-[0_4px_12px_rgba(249,115,22,0.7)] transition w-full sm:w-auto justify-self-center">Add
-              Item</button>
+              class="border border-white/20 p-2 rounded focus:outline-none">
+            <!-- <button onclick="addItem()" id="added-btn"
+              class="bg-transparent border border-[#FF8814]/20 text-orange-400 px-4 py-2 rounded-xl mt-2 hover:shadow-[0_4px_12px_rgba(249,115,22,0.7)] transition w-full sm:w-auto justify-self-center">Add
+              Item</button> -->
+            <button
+              onclick="addItem()" id="added-btn" class="glow-btn text-orange-400 px-4 py-2 rounded-2xl backdrop-blur-lg border border-orange-500/20 bg-gradient-to-tr from-black/60 to-black/40 shadow-lg hover:scale-110 sm:w-auto justify-self-center active:scale-95 transition-all duration-300 ease-out cursor-pointer relative overflow-hidden">
+
+              <!-- Shine overlay -->
+              <div
+                class="shine-effect absolute inset-0 bg-gradient-to-r from-transparent via-orange-400/20 to-transparent">
+              </div>
+
+              Add Person
+            </button>
           </div>
         </div>
       </div>
 
       <!-- Items Table -->
-      <div class="bg-white/20 backdrop-blur-sm rounded-xl shadow mt-6 overflow-hidden">
+      <div class="rounded-xl shadow mt-6 overflow-hidden border border-[white]/20">
         <div id="peopleTableWrapper2" class="overflow-x-auto max-h-48 sm:max-h-60">
           <table class="w-full text-sm sm:text-base">
-            <thead id="peopleTableHead2"
-              class="sticky top-0 bg-white/40 backdrop-blur-sm border-b border-green-400 text-gray-700">
+            <thead id="peopleTableHead2" class="sticky top-0 border border-[white]/20 bg-[#222222] text-white-300">
               <tr>
                 <th class="p-2">Date</th>
                 <th class="p-2">Item</th>
@@ -142,64 +176,73 @@
         </div>
       </div>
       <!-- Settlement Button -->
-      <div class="text-center mt-4">
-        <button onclick="openSettlement()"
-          class="bg-transparent border-2 border-purple-500 text-purple-500 px-6 py-2 rounded-xl hover:shadow-[0_4px_12px_rgba(168,85,247,0.7)] transition">
+      <div onclick="openSettlement()" class="text-center mt-4">
+        <button
+          class="group relative px-4 py-2 rounded-xl backdrop-blur-xl border-2 border-indigo-500/30 bg-gradient-to-br from-indigo-900/40 via-black-900/60 to-black/80 shadow-2xl hover:shadow-indigo-500/30 hover:shadow-2xl hover:scale-[1.02] hover:-translate-y-1 active:scale-95 transition-all duration-500 ease-out cursor-pointer hover:border-indigo-400/60 overflow-hidden text-white">
           Settlement
-        </button>
-      </div>
-
-      <!-- Settlement Popup -->
-      <div id="settlementModal"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
-        <div class="bg-white/90 rounded-2xl shadow-lg p-6 w-11/12 sm:w-2/3 lg:w-1/2">
-          <h2 class="text-lg font-semibold mb-4 text-center">Settlement Details</h2>
-          <table class="w-full border border-gray-300 rounded-lg overflow-hidden">
-            <thead class="bg-gray-200 text-gray-700">
-              <tr>
-                <th class="p-2">Name</th>
-                <th class="p-2">Balance</th>
-                <th class="p-2">Status</th>
-              </tr>
-            </thead>
-            <tbody id="settlementTable" class="text-center"></tbody>
-          </table>
-          <div class="text-center mt-4">
-            <button onclick="closeSettlement()"
-              class="bg-red-500 text-white px-6 py-2 rounded-xl hover:bg-red-600 transition">
-              Close
-            </button>
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-transparent via-indigo-400/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out">
           </div>
+          <div
+            class="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/10 via-indigo-400/20 to-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+          </div>
+      </div>
+      </button>
+    </div>
+
+
+    <!-- Settlement Popup -->
+    <div id="settlementModal"
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
+      <div class="bg-white/90 rounded-2xl shadow-lg p-6 w-11/12 sm:w-2/3 lg:w-1/2">
+        <h2 class="text-lg font-semibold mb-4 text-center">Settlement Details</h2>
+        <table class="w-full border border-gray-300 rounded-lg overflow-hidden">
+          <thead class="bg-gray-200 text-gray-700">
+            <tr>
+              <th class="p-2">Name</th>
+              <th class="p-2">Balance</th>
+              <th class="p-2">Status</th>
+            </tr>
+          </thead>
+          <tbody id="settlementTable" class="text-center"></tbody>
+        </table>
+        <div class="text-center mt-4">
+          <button onclick="closeSettlement()"
+            class="bg-red-500 text-red px-6 py-2 rounded-xl hover:bg-red-600 transition">
+            Close
+          </button>
         </div>
       </div>
     </div>
   </div>
+  </div>
+  </div>
 
   <script>
-    const wrapper = document.getElementById("peopleTableWrapper");
-    const thead = document.getElementById("peopleTableHead");
+    // const wrapper = document.getElementById("peopleTableWrapper");
+    // const thead = document.getElementById("peopleTableHead");
 
-    wrapper.addEventListener("scroll", () => {
-      if (wrapper.scrollTop > 0) {
-        thead.classList.remove("bg-white/10");
-        thead.classList.add("bg-white/100");
-      } else {
-        thead.classList.remove("bg-white/100");
-        thead.classList.add("bg-white/10");
-      }
-    });
+    // wrapper.addEventListener("scroll", () => {
+    //   if (wrapper.scrollTop > 0) {
+    //     thead.classList.remove("bg-white/10");
+    //     thead.classList.add("bg-white/100");
+    //   } else {
+    //     thead.classList.remove("bg-white/100");
+    //     thead.classList.add("bg-white/10");
+    //   }
+    // });
 
-    const wrapper2 = document.getElementById("peopleTableWrapper2");
-    const thead2 = document.getElementById("peopleTableHead2");
-    wrapper2.addEventListener("scroll", () => {
-      if (wrapper2.scrollTop > 0) {
-        thead2.classList.remove("bg-white/10");
-        thead2.classList.add("bg-white/100");
-      } else {
-        thead2.classList.remove("bg-white/100");
-        thead2.classList.add("bg-white/10");
-      }
-    });
+    // const wrapper2 = document.getElementById("peopleTableWrapper2");
+    // const thead2 = document.getElementById("peopleTableHead2");
+    // wrapper2.addEventListener("scroll", () => {
+    //   if (wrapper2.scrollTop > 0) {
+    //     thead2.classList.remove("bg-white/10");
+    //     thead2.classList.add("bg-white/100");
+    //   } else {
+    //     thead2.classList.remove("bg-white/100");
+    //     thead2.classList.add("bg-white/10");
+    //   }
+    // });
 
     let people = JSON.parse(localStorage.getItem("people")) || [];
     let items = JSON.parse(localStorage.getItem("items")) || [];
@@ -266,7 +309,7 @@
       const table = document.getElementById("peopleTable");
       table.innerHTML = "";
       people.forEach((p, index) => {
-        const row = `<tr class="border-b">
+        const row = `<tr class="border border-white/20">
         <td class="p-2">${p.date || "-"}</td>
         <td class="p-2">${p.name}</td>
         <td class="p-2">₹${p.given || 0}</td>
@@ -275,8 +318,8 @@
           ${p.balance >= 0 ? "+" : ""}${p.balance || 0}
         </td>
         <td class="p-2 hidden sm:table-cell">
-          <button onclick="setLeaveDate(${index})" class="text-blue-600 hover:underline">Set Leave</button>
-          <button onclick="removePerson(${index})" class="text-red-600 ml-3 hover:underline">Remove</button>
+          <button onclick="setLeaveDate(${index})" class="text-blue-400 hover:underline">Set Leave</button>
+          <button onclick="removePerson(${index})" class="text-red-400 ml-3 hover:underline">Remove</button>
         </td>
       </tr>`;
         table.innerHTML += row;
@@ -287,13 +330,13 @@
       const table = document.getElementById("itemsTable");
       table.innerHTML = "";
       items.forEach((i, index) => {
-        const row = `<tr class="border-b">
+        const row = `<tr class="border border-white/20">
         <td class="p-2">${i.date}</td>
         <td class="p-2">${i.name}</td>
         <td class="p-2">₹${i.amount}</td>
         <td class="p-2">${i.buyer}</td>
         <td class="p-2 hidden sm:table-cell">
-          <button onclick="removeItem(${index})" class="text-red-600 hover:underline">Remove</button>
+          <button onclick="removeItem(${index})" class="text-red-400 hover:underline">Remove</button>
         </td>
       </tr>`;
         table.innerHTML += row;
@@ -398,35 +441,36 @@
     }
 
     // Open Settlement Popup
+
     function openSettlement() {
       // create modal
       const modal = document.createElement("div");
       modal.className = "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
       modal.innerHTML = `
-    <div class="bg-white rounded-xl p-6 w-11/12 sm:w-2/3 lg:w-1/2 shadow-xl">
+    <div class="bg-[#151515] border border-white/10 rounded-xl p-6 w-11/12 sm:w-2/3 lg:w-1/2 shadow-xl">
       <h2 class="text-lg sm:text-xl font-semibold mb-4 text-center">Settlement Details</h2>
 
       <div class="overflow-x-auto mb-4">
         <table class="w-full border-collapse rounded-lg overflow-hidden shadow-sm">
           <thead class="bg-gray-100 text-gray-700 text-sm sm:text-base">
             <tr>
-              <th class="p-3 border">From</th>
-              <th class="p-3 border">To</th>
-              <th class="p-3 border">Amount</th>
+              <th class="p-3 border border-white/10">From</th>
+              <th class="p-3 border border-white/10">To</th>
+              <th class="p-3 border border-white/10">Amount</th>
             </tr>
           </thead>
           <tbody id="settlementBody" class="text-center text-sm sm:text-base divide-y"></tbody>
         </table>
       </div>
 
-      <div id="kittySection" class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-        <h3 class="font-semibold text-blue-700 mb-2">Remaining Balance</h3>
-        <p id="kittyInfo" class="text-gray-700 mb-2"></p>
-        <div id="kittyResult" class="text-gray-800 text-sm sm:text-base"></div>
+      <div id="kittySection" class="mt-4 p-4 bg-[#4B0082]/5 rounded-lg border border-indigo-500/30 ">
+        <h3 class="font-semibold text-indigo-700 mb-2">Remaining Balance</h3>
+        <p id="kittyInfo" class="text-gray-600 mb-2"></p>
+        <div id="kittyResult" class="text-gray-600 text-sm sm:text-base"></div>
       </div>
 
       <div class="mt-6 text-center">
-        <button id="closeSettlement" class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg">Close</button>
+        <button id="closeSettlement" class="bg-[#A93A0B]/5 text-red-600 border border-[#A93A0B]/30 hover:bg-[#A93A0B]/15 text-red px-5 py-2 rounded-lg">Close</button>
       </div>
     </div>
   `;
@@ -437,22 +481,27 @@
       const kittyInfo = modal.querySelector("#kittyInfo");
       const kittyResult = modal.querySelector("#kittyResult");
 
-      // --- compute correct totals
+      // --- compute totals
       const totalGiven = people.reduce((s, p) => s + (Number(p.given) || 0), 0);
       const totalSpent = items.reduce((s, it) => s + (Number(it.amount) || 0), 0);
-      const kittyBalance = parseFloat((totalGiven - totalSpent).toFixed(2)); // correct kitty
+      const kittyBalance = parseFloat((totalGiven - totalSpent).toFixed(2));
 
-      // --- settlement matching (use copies so original balances not mutated)
-      const creditors = people
-        .filter(p => Number(p.balance) > 0)
-        .map(p => ({ name: p.name, balance: parseFloat(Number(p.balance).toFixed(2)) }));
-
-      const debtors = people
-        .filter(p => Number(p.balance) < 0)
-        .map(p => ({ name: p.name, balance: parseFloat(Math.abs(Number(p.balance)).toFixed(2)) })); // positive debt
+      // --- create a clone of balances
+      const balances = {};
+      people.forEach(p => balances[p.name] = Number(p.balance) || 0);
 
       const settlements = [];
 
+      // separate creditors and debtors
+      let creditors = Object.entries(balances)
+        .filter(([_, bal]) => bal > 0)
+        .map(([name, bal]) => ({ name, balance: bal }));
+
+      let debtors = Object.entries(balances)
+        .filter(([_, bal]) => bal < 0)
+        .map(([name, bal]) => ({ name, balance: Math.abs(bal) }));
+
+      // --- settlement matching
       for (let d of debtors) {
         let debtLeft = d.balance;
         for (let c of creditors) {
@@ -460,23 +509,24 @@
           if (c.balance <= 0) continue;
 
           let settle = Math.min(debtLeft, c.balance);
-          settle = parseFloat(settle.toFixed(2));
           if (settle > 0) {
             settlements.push({ from: d.name, to: c.name, amount: settle });
-            c.balance = parseFloat((c.balance - settle).toFixed(2));
-            debtLeft = parseFloat((debtLeft - settle).toFixed(2));
+            c.balance -= settle;
+            balances[d.name] += settle; // debtor less negative
+            balances[c.name] -= settle; // creditor less positive
+            debtLeft -= settle;
           }
         }
       }
 
-      // render settlement rows
+      // --- render settlement rows
       if (settlements.length) {
         settlements.forEach(s => {
           const tr = document.createElement("tr");
           tr.innerHTML = `
-        <td class="p-3 border">${s.from}</td>
-        <td class="p-3 border">${s.to}</td>
-        <td class="p-3 border">₹${s.amount.toFixed(2)}</td>
+        <td class="p-3 border border-white/10">${s.from}</td>
+        <td class="p-3 border border-white/10">${s.to}</td>
+        <td class="p-3 border border-white/10">₹${s.amount.toFixed(2)}</td>
       `;
           tbody.appendChild(tr);
         });
@@ -486,46 +536,32 @@
         tbody.appendChild(tr);
       }
 
-      // --- KITTY: show correct kitty and distribution
+      // --- KITTY INFO
       kittyInfo.textContent = `Total Given: ₹${totalGiven.toFixed(2)} • Total Spent: ₹${totalSpent.toFixed(2)} • Remaining: ₹${kittyBalance.toFixed(2)}`;
 
-      // Calculate kitty distribution (contributor based only)
+      // --- KITTY DISTRIBUTION
       kittyResult.innerHTML = "";
       if (kittyBalance <= 0) {
         kittyResult.innerHTML = `<p class="text-gray-600">No extra money left.</p>`;
       } else {
-        // contributor-based: distribute only among people who are STILL creditors AFTER settlements
-        // Calculate balances after settlements
-        const balancesAfterSettlement = {};
-        people.forEach(p => {
-          balancesAfterSettlement[p.name] = Number(p.balance);
-        });
+        const remainingCreditors = Object.entries(balances)
+          .filter(([_, bal]) => bal > 0);
 
-        // Apply settlements to balances
-        settlements.forEach(s => {
-          balancesAfterSettlement[s.from] += s.amount; // debtors get less negative
-          balancesAfterSettlement[s.to] -= s.amount;   // creditors get less positive
-        });
+        const totalPositive = remainingCreditors.reduce((s, [_, bal]) => s + bal, 0);
 
-        // Get people who are still creditors (positive balance after settlements)
-        const remainingCreditors = people.filter(p => balancesAfterSettlement[p.name] > 0);
-        const totalPositiveAfterSettlement = remainingCreditors.reduce((s, c) => s + balancesAfterSettlement[c.name], 0);
-
-        if (remainingCreditors.length === 0 || totalPositiveAfterSettlement <= 0) {
+        if (remainingCreditors.length === 0 || totalPositive <= 0) {
           kittyResult.innerHTML = `<p class="text-gray-600">No creditors remaining after settlements.</p>`;
         } else {
-          // Distribute kitty based on remaining positive balances
           let assigned = 0;
-          remainingCreditors.forEach((c, idx) => {
-            const shareRaw = (balancesAfterSettlement[c.name] / totalPositiveAfterSettlement) * kittyBalance;
-
+          remainingCreditors.forEach(([name, bal], idx) => {
+            const rawShare = (bal / totalPositive) * kittyBalance;
             if (idx < remainingCreditors.length - 1) {
-              const share = parseFloat(shareRaw.toFixed(2));
-              kittyResult.innerHTML += `<p>${c.name} gets back <strong>₹${share.toFixed(2)}</strong></p>`;
+              const share = Math.round(rawShare * 100) / 100;
+              kittyResult.innerHTML += `<p>${name} gets back <strong>₹${share.toFixed(2)}</strong></p>`;
               assigned += share;
             } else {
-              const last = parseFloat((kittyBalance - assigned).toFixed(2));
-              kittyResult.innerHTML += `<p>${c.name} gets back <strong>₹${last.toFixed(2)}</strong></p>`;
+              const last = Math.round((kittyBalance - assigned) * 100) / 100;
+              kittyResult.innerHTML += `<p>${name} gets back <strong>₹${last.toFixed(2)}</strong></p>`;
             }
           });
         }
@@ -534,6 +570,7 @@
       // close handler
       modal.querySelector("#closeSettlement").addEventListener("click", () => modal.remove());
     }
+
     // Load data from localStorage on page load
     updateSummary();
   </script>
