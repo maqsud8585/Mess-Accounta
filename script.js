@@ -216,7 +216,7 @@ function removeItem(index) {
   updateSummary();
 }
 
-// Open Settlement Modal (unchanged logic, minor cleanup)
+// Settlement Modal
 function openSettlement() {
   const modal = document.createElement("div");
   modal.className = "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
@@ -319,3 +319,212 @@ function openSettlement() {
 
 // Init
 updateSummary();
+
+function saveAndClear() {
+  const confirmSave = confirm("Do you want to save and clear the current data?");
+  if (!confirmSave) {
+    return; // user clicked "No"
+  }
+
+  // --- compute kitty summary
+  const totalGiven = people.reduce((s, p) => s + (Number(p.given) || 0), 0);
+  const totalSpent = items.reduce((s, it) => s + (Number(it.amount) || 0), 0);
+  const kittyBalance = parseFloat((totalGiven - totalSpent).toFixed(2));
+
+  // --- clone balances for settlement calculation
+  const balances = {};
+  people.forEach(p => balances[p.name] = Number(p.balance) || 0);
+
+  const settlements = [];
+  let creditors = Object.entries(balances)
+    .filter(([_, bal]) => bal > 0)
+    .map(([name, bal]) => ({ name, balance: bal }));
+
+  let debtors = Object.entries(balances)
+    .filter(([_, bal]) => bal < 0)
+    .map(([name, bal]) => ({ name, balance: Math.abs(bal) }));
+
+  // --- compute settlement matching
+  for (let d of debtors) {
+    let debtLeft = d.balance;
+    for (let c of creditors) {
+      if (debtLeft <= 0) break;
+      if (c.balance <= 0) continue;
+
+      let settle = Math.min(debtLeft, c.balance);
+      if (settle > 0) {
+        settlements.push({ from: d.name, to: c.name, amount: parseFloat(settle.toFixed(2)) });
+        c.balance -= settle;
+        balances[d.name] += settle;
+        balances[c.name] -= settle;
+        debtLeft -= settle;
+      }
+    }
+  }
+
+  // --- create record
+  const record = {
+    dateSaved: new Date().toISOString(),
+    people: [...people],
+    items: [...items],
+    kitty: {
+      totalGiven: parseFloat(totalGiven.toFixed(2)),
+      totalSpent: parseFloat(totalSpent.toFixed(2)),
+      kittyBalance
+    },
+    settlements
+  };
+
+  // --- save in previousRecords
+  let previousRecords = JSON.parse(localStorage.getItem("previousRecords")) || [];
+  previousRecords.push(record);
+  localStorage.setItem("previousRecords", JSON.stringify(previousRecords));
+
+  // --- clear current data
+  people = [];
+  items = [];
+  saveData();
+  updateSummary();
+
+  alert("✅ Record saved successfully! Data has been cleared.");
+}
+
+// Render Previous Records
+function renderPreviousRecords() {
+  const container = document.getElementById("recordsList");
+  const previousRecords = JSON.parse(localStorage.getItem("previousRecords")) || [];
+  container.innerHTML = "";
+
+  if (previousRecords.length === 0) {
+    container.innerHTML = "<p class='text-gray-400'>No saved records yet.</p>";
+    return;
+  }
+
+  previousRecords.forEach((record, index) => {
+    // create card container
+    const card = document.createElement("div");
+    card.className = "bg-[#151515] border border-white/10 rounded-xl p-4 shadow-md";
+
+    // header (clickable to expand)
+    card.innerHTML = `
+          <div class="flex items-center justify-between cursor-pointer" onclick="toggleDetails(${index})">
+           <h2 class="text-lg font-semibold">Record ${index + 1} — ${new Date(record.dateSaved).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</h2>
+            <span id="toggleIcon-${index}" class="text-gray-400">\uff0b</span>
+          </div>
+          <div id="details-${index}" class="hidden mt-4 space-y-4">
+            
+            <h3 class="text-md text-gray-400 font-semibold">People</h3>
+            <table class="w-full text-sm border border-white/20">
+              <thead class="bg-white/10">
+                <tr>
+                  <th class="p-2">Name</th>
+                  <th class="p-2">Given</th>
+                  <th class="p-2">Share</th>
+                  <th class="p-2">Balance</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${record.people.map(p => `
+                  <tr>
+                    <td class="p-2 border border-white/10">${p.name}</td>
+                    <td class="p-2 border border-white/10">₹${p.given}</td>
+                    <td class="p-2 border border-white/10">₹${p.share}</td>
+                    <td class="p-2 border border-white/10">${p.balance}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+
+            <h3 class="text-md text-gray-400 font-semibold">Items</h3>
+            <table class="w-full text-sm border border-white/20">
+              <thead class="bg-white/10">
+                <tr>
+                  <th class="p-2 border border-white/10">Date</th>
+                  <th class="p-2 border border-white/10">Item</th>
+                  <th class="p-2 border border-white/10">Amount</th>
+                  <th class="p-2 border border-white/10">Buyer</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${record.items.map(i => `
+                  <tr>
+                    <td class="p-2 border border-white/10">${i.date}</td>
+                    <td class="p-2 border border-white/10">${i.name}</td>
+                    <td class="p-2 border border-white/10">₹${i.amount}</td>
+                    <td class="p-2 border border-white/10">${i.buyer}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+
+            <h3 class="text-md text-gray-400 font-semibold">Summary</h3>
+            <div class="bg-black/30 p-3 rounded-lg border border-white/20">
+              <p><strong>Total Given:</strong> ₹${record.kitty.totalGiven}</p>
+              <p><strong>Total Spent:</strong> ₹${record.kitty.totalSpent}</p>
+              <p><strong>Kitty Balance:</strong> ₹${record.kitty.kittyBalance}</p>
+            </div>
+
+            ${record.settlements && record.settlements.length > 0 ? `
+              <h3 class="text-md text-gray-400 font-semibold">Settlements</h3>
+              <table class="w-full text-sm border border-white/20">
+                <thead class="bg-white/10">
+                  <tr>
+                    <th class="p-2 border border-white/10">From</th>
+                    <th class="p-2 border border-white/10">To</th>
+                    <th class="p-2 border border-white/10">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${record.settlements.map(s => `
+                    <tr>
+                      <td class="p-2 border border-white/10">${s.from}</td>
+                      <td class="p-2 border border-white/10">${s.to}</td>
+                      <td class="p-2 border border-white/10">₹${s.amount}</td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            ` : `<p class="text-gray-400">No settlements recorded.</p>`}
+
+            <button onclick="deleteRecord(${index})" 
+              class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg mt-3">
+              Delete Record
+            </button>
+          </div>
+        `;
+
+    container.appendChild(card);
+  });
+}
+
+function toggleDetails(index) {
+  const details = document.getElementById(`details-${index}`);
+  const icon = document.getElementById(`toggleIcon-${index}`);
+  if (details.classList.contains("hidden")) {
+    details.classList.remove("hidden");
+    icon.textContent = "\uFF0D"; // minus sign
+  } else {
+    details.classList.add("hidden");
+    icon.textContent = "\uff0b";// plus sign
+  }
+}
+
+function deleteRecord(index) {
+  const confirmDelete = confirm("Are you sure you want to delete this record?");
+  if (!confirmDelete) {
+    return;
+  }
+
+  let records = JSON.parse(localStorage.getItem("previousRecords")) || [];
+  records.splice(index, 1);
+  localStorage.setItem("previousRecords", JSON.stringify(records));
+  renderPreviousRecords();
+
+  alert("Record deleted successfully!");
+}
+
+
+renderPreviousRecords();
+
+
+

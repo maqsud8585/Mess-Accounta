@@ -56,7 +56,7 @@
       <div class="hidden md:flex space-x-20 font-medium border border-white/20 px-5 py-2 rounded-full">
         <a href="./index.html" class="text-gray-400 hover:text-white transition">Home</a>
         <a href="./Purchase-History.html" class="text-gray-400 hover:text-white transition">Purchase History</a>
-        <a href="#items" class="text-gray-400 hover:text-white transition">Past Months</a>
+        <a href="./Past-Months.html" class="text-gray-400 hover:text-white transition">Past Months</a>
         <a href="#about" class="text-gray-400 hover:text-white transition">About</a>
       </div>
 
@@ -72,7 +72,7 @@
     <div id="mobileMenu" class="hidden md:hidden bg-black/80 backdrop-blur-md border-t border-white/10">
       <a href="./index.html" class="block px-4 py-2 hover:bg-white/10">Home</a>
       <a href="./Purchase-History.html" class="block px-4 py-2 hover:bg-white/10">Purchase History</a>
-      <a href="#" class="block px-4 py-2 hover:bg-white/10">Past Months</a>
+      <a href="./Past-Months.html" class="block px-4 py-2 hover:bg-white/10">Past Months</a>
       <a href="#about" class="block px-4 py-2 hover:bg-white/10">About</a>
     </div>
   </nav>
@@ -128,7 +128,7 @@
       <!-- Forms -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-        <!-- Add Person + Increase/Decrease -->
+        <!-- Add Person + Increase/Decrease Form-->
         <div class="hidden sm:block rounded-xl shadow p-4 border border-white/10">
           <h3 class="font-semibold mb-3 text-center sm:text-left">Add Person</h3>
           <div class="flex flex-col sm:flex-row gap-2">
@@ -180,7 +180,6 @@
               class="border border-white/20 p-2 rounded focus:outline-none">
             <button onclick="addItem()" id="added-btn"
               class="glow-btn text-orange-400 px-4 py-2 rounded-2xl backdrop-blur-lg border border-orange-500/20 bg-gradient-to-tr from-black/60 to-black/40 shadow-lg hover:scale-110 sm:w-auto justify-self-center active:scale-95 transition-all duration-300 ease-out cursor-pointer relative overflow-hidden">
-              <!-- Shine overlay -->
               <div
                 class="shine-effect absolute inset-0 bg-gradient-to-r from-transparent via-orange-400/20 to-transparent">
               </div>
@@ -202,7 +201,7 @@
             class="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/10 via-indigo-400/20 to-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
           </div>
         </button>
-        <button onclick=" "
+        <button onclick="saveAndClear()"
           class="bg-[#FFFFFF]/10 backdrop-blur-lg border border-[#FFFFFF]/20 text-white-400 px-3 py-2 mx-1 rounded-xl hover:bg-[#FFFFFF]/20 transition sm:w-auto">
           Save and Clear
         </button>
