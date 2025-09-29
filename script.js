@@ -75,10 +75,10 @@ function applyUserPermissions() {
 function updateNavbar() {
   const navbar = document.querySelector('nav .max-w-6xl');
   if (!navbar) return;
-  
+
   // Check if user dropdown already exists
   if (document.getElementById('userDropdown')) return;
-  
+
   const userDropdown = document.createElement('div');
   userDropdown.className = 'relative';
   userDropdown.id = 'userDropdown';
@@ -105,18 +105,18 @@ function updateNavbar() {
       </button>
     </div>
   `;
-  
+
   navbar.appendChild(userDropdown);
-  
+
   // Add dropdown toggle functionality
   const userMenuBtn = document.getElementById('userMenuBtn');
   const userDropdownMenu = document.getElementById('userDropdownMenu');
-  
+
   userMenuBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     userDropdownMenu.classList.toggle('hidden');
   });
-  
+
   // Close dropdown when clicking outside
   document.addEventListener('click', () => {
     userDropdownMenu.classList.add('hidden');
@@ -140,6 +140,123 @@ if (menuBtn && mobileMenu) {
 
 let people = JSON.parse(localStorage.getItem("people")) || [];
 let items = JSON.parse(localStorage.getItem("items")) || [];
+
+// ========== IMAGE COMPRESSION FUNCTIONS ==========
+// Advanced image compression with target size
+function compressImageToSize(file, targetSizeKB = 200, maxWidth = 1200, maxHeight = 800) {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+
+    img.onload = function () {
+      let width = img.width;
+      let height = img.height;
+
+      // Calculate dimensions while maintaining aspect ratio
+      if (width > maxWidth || height > maxHeight) {
+        const ratio = Math.min(maxWidth / width, maxHeight / height);
+        width = Math.floor(width * ratio);
+        height = Math.floor(height * ratio);
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+
+      // Draw image
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Progressive compression to achieve target size
+      const compressIteration = (quality, attempts = 0) => {
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+        const sizeKB = (compressedDataUrl.length * 0.75) / 1024; // Base64 is ~33% larger
+
+        console.log(`Compression attempt ${attempts + 1}: ${quality} quality → ${sizeKB.toFixed(2)}KB`);
+
+        if (sizeKB <= targetSizeKB || quality <= 0.3 || attempts >= 5) {
+          resolve({
+            dataUrl: compressedDataUrl,
+            originalSize: file.size,
+            compressedSize: compressedDataUrl.length,
+            quality: quality,
+            sizeKB: sizeKB,
+            dimensions: { width, height }
+          });
+        } else {
+          // Reduce quality and try again
+          const newQuality = Math.max(quality - 0.15, 0.3);
+          setTimeout(() => compressIteration(newQuality, attempts + 1), 50);
+        }
+      };
+
+      // Start with high quality
+      compressIteration(0.9, 0);
+    };
+
+    img.onerror = () => reject(new Error('Failed to load image'));
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+// Smart compression based on original file size
+function smartCompressImage(file) {
+  const originalSizeMB = file.size / (1024 * 1024);
+
+  // Adjust compression based on original file size
+  let targetSizeKB, maxWidth, maxHeight;
+
+  if (originalSizeMB > 3) {
+    // Large files: aggressive compression
+    targetSizeKB = 150;
+    maxWidth = 800;
+    maxHeight = 600;
+  } else if (originalSizeMB > 1) {
+    // Medium files: moderate compression
+    targetSizeKB = 200;
+    maxWidth = 1000;
+    maxHeight = 750;
+  } else {
+    // Small files: light compression
+    targetSizeKB = 250;
+    maxWidth = 1200;
+    maxHeight = 900;
+  }
+
+  return compressImageToSize(file, targetSizeKB, maxWidth, maxHeight);
+}
+
+// Enhanced image preview with size info
+function handleImageUpload() {
+  const fileInput = document.getElementById('itemImage');
+  const preview = document.getElementById('imagePreview');
+  const previewImage = document.getElementById('previewImage');
+
+  fileInput.addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    if (file) {
+      const originalUrl = URL.createObjectURL(file);
+      previewImage.src = originalUrl;
+      preview.classList.remove('hidden');
+
+      // Update file size info
+      let sizeInfo = preview.querySelector('.size-info');
+      if (!sizeInfo) {
+        sizeInfo = document.createElement('div');
+        sizeInfo.className = 'size-info text-xs text-center mt-2';
+        preview.appendChild(sizeInfo);
+      }
+
+      const originalSizeKB = (file.size / 1024).toFixed(2);
+      sizeInfo.innerHTML = `
+        <div class="text-gray-400">Original: <strong>${originalSizeKB} KB</strong></div>
+        <div class="text-orange-400 mt-1">Will be compressed to ~200KB</div>
+      `;
+    } else {
+      preview.classList.add('hidden');
+    }
+  });
+}
+// ========== END IMAGE COMPRESSION FUNCTIONS ==========
 
 // Save data
 function saveData() {
@@ -233,10 +350,10 @@ function renderItems() {
   [...items].reverse().forEach((i, index) => {
     const realIndex = items.length - 1 - index;
     const actionButton = currentUser && currentUser.role === 'admin'
-      ? `<td class="p-2 hidden sm:table-cell">
+      ? `<td class="p-2 sm:table-cell">
            <button onclick="removeItem(${realIndex})" class="text-red-400 hover:underline">Remove</button>
          </td>`
-      : '<td class="p-2 hidden sm:table-cell"></td>';
+      : '<td class="p-2 sm:table-cell"></td>';
 
     const row = `<tr class="border border-white/20">
       <td class="p-2">${i.date}</td>
@@ -311,35 +428,118 @@ function decreaseAmount() {
 }
 
 // Add Item
-function addItem() {
-  const date = document.getElementById("itemDate").value;
-  const name = document.getElementById("itemName").value;
-  const amount = Number(document.getElementById("itemAmount").value);
-  const buyer = document.getElementById("purchasedBy").value;
+// Enhanced add item with smart compression
+async function addItem() {
+  const date = document.getElementById('itemDate').value;
+  const name = document.getElementById('itemName').value;
+  const amount = Number(document.getElementById('itemAmount').value);
+  const buyer = document.getElementById('purchasedBy').value;
+  const imageFile = document.getElementById('itemImage').files[0];
+
   if (!date || !name || isNaN(amount) || !buyer) return;
 
-  items.push({ date, name, amount, buyer });
+  let imageData = null;
+  let compressionResult = null;
 
-  document.getElementById("itemDate").value = "";
-  document.getElementById("itemName").value = "";
-  document.getElementById("itemAmount").value = "";
-  document.getElementById("purchasedBy").value = "";
+  if (imageFile) {
+    // Check file size before compression (max 10MB)
+    if (imageFile.size > 10 * 1024 * 1024) {
+      alert('Image size too large. Please select an image smaller than 10MB.');
+      return;
+    }
+
+    try {
+      const btn = document.getElementById('added-btn');
+      if (btn) {
+        btn.innerText = "Compressing...";
+        btn.disabled = true;
+      }
+
+      // Use smart compression based on file size
+      compressionResult = await smartCompressImage(imageFile);
+      imageData = compressionResult.dataUrl;
+
+      // Show compression results to user
+      const originalKB = (compressionResult.originalSize / 1024).toFixed(2);
+      const compressedKB = compressionResult.sizeKB.toFixed(2);
+      const reduction = ((1 - compressionResult.sizeKB / (compressionResult.originalSize / 1024)) * 100).toFixed(1);
+
+      console.log(`✅ Compression successful: ${originalKB}KB → ${compressedKB}KB (${reduction}% reduction)`);
+
+      // Optional: Show compression info to user
+      setTimeout(() => {
+        alert(`Image compressed successfully!\n${originalKB}KB → ${compressedKB}KB (${reduction}% smaller)`);
+      }, 100);
+
+    } catch (error) {
+      console.error('❌ Compression error:', error);
+      alert('Error processing image. Please try again with a different image.');
+      return;
+    } finally {
+      const btn = document.getElementById('added-btn');
+      if (btn) {
+        btn.innerText = '\uff0b Add Item';
+        btn.disabled = false;
+      }
+    }
+  }
+
+  // Add item to the list
+  items.push({
+    date,
+    name,
+    amount,
+    buyer,
+    image: imageData,
+    _compression: compressionResult ? {
+      originalKB: (compressionResult.originalSize / 1024).toFixed(2),
+      compressedKB: compressionResult.sizeKB.toFixed(2),
+      quality: compressionResult.quality
+    } : null
+  });
+
+  // Clear form
+  document.getElementById('itemDate').value = "";
+  document.getElementById('itemName').value = "";
+  document.getElementById('itemAmount').value = "";
+  document.getElementById('purchasedBy').value = "";
+  document.getElementById('itemImage').value = "";
+  document.getElementById('imagePreview').classList.add('hidden');
 
   updateSummary();
-  const btn = document.getElementById("added-btn");
+
+  // Show success message
+  const btn = document.getElementById('added-btn');
   if (btn) {
-    btn.innerText = "Added!";
+    btn.innerText = "✓ Added!";
     setTimeout(() => (btn.innerText = '\uff0b Add Item'), 2000);
   }
 }
 
-// Set Leave Date
-function setLeaveDate(index) {
-  const leaveDate = prompt("Enter leave date (YYYY-MM-DD):");
-  if (leaveDate) {
-    people[index].leaveDate = leaveDate;
-    updateSummary();
+// Monitor storage usage
+function checkStorageUsage() {
+  const itemsData = JSON.stringify(items);
+  const peopleData = JSON.stringify(people);
+  const totalSize = (itemsData.length + peopleData.length) / 1024; // Size in KB
+  
+  console.log(`📊 Storage Usage:`);
+  console.log(`- Items: ${(itemsData.length / 1024).toFixed(2)}KB`);
+  console.log(`- People: ${(peopleData.length / 1024).toFixed(2)}KB`);
+  console.log(`- Total: ${totalSize.toFixed(2)}KB`);
+  
+  // Check image storage specifically
+  const imagesSize = items.reduce((total, item) => {
+    return total + (item.image ? item.image.length * 0.75 : 0); // Base64 to binary size
+  }, 0) / 1024;
+  
+  console.log(`- Images: ${imagesSize.toFixed(2)}KB`);
+  
+  // Warn if storage is getting large
+  if (totalSize > 5000) { // 5MB warning
+    console.warn('⚠️ Storage usage is getting high. Consider clearing old data.');
   }
+  
+  return totalSize;
 }
 
 // Remove Person
@@ -462,11 +662,21 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!window.location.href.includes('authen.html')) {
     protectPage();
   }
+  // Initialize image upload handler if on main page
+  if (document.getElementById('itemImage')) {
+    handleImageUpload();
+  }
+
 
   // Initialize app if on main page
   if (document.getElementById('peopleTable')) {
     updateSummary();
   }
+
+  // Check storage usage (optional)
+  setTimeout(() => {
+    checkStorageUsage();
+  }, 1000);
 
   // Initialize previous records if on that page
   if (document.getElementById('recordsList')) {
@@ -672,9 +882,139 @@ function deleteRecord(index) {
 
   alert("Record deleted successfully!");
 }
-
-
 renderPreviousRecords();
+
+// Image handling functions
+function handleImageUpload() {
+  const fileInput = document.getElementById('itemImage');
+  const preview = document.getElementById('imagePreview');
+  const previewImage = document.getElementById('previewImage');
+
+  fileInput.addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        previewImage.src = e.target.result;
+        preview.classList.remove('hidden');
+      }
+      reader.readAsDataURL(file);
+    } else {
+      preview.classList.add('hidden');
+    }
+  });
+}
+
+// Convert image to base64 for storage
+function imageToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+}
+
+// Updated Add Item function
+async function addItem() {
+  const date = document.getElementById('itemDate').value;
+  const name = document.getElementById('itemName').value;
+  const amount = Number(document.getElementById('itemAmount').value);
+  const buyer = document.getElementById('purchasedBy').value;
+  const imageFile = document.getElementById('itemImage').files[0];
+
+  if (!date || !name || isNaN(amount) || !buyer) return;
+
+  let imageData = null;
+  if (imageFile) {
+    try {
+      imageData = await imageToBase64(imageFile);
+    } catch (error) {
+      console.error('Error converting image:', error);
+      alert('Error uploading image. Please try again.');
+      return;
+    }
+  }
+
+  items.push({ date, name, amount, buyer, image: imageData });
+
+  // Clear form
+  document.getElementById('itemDate').value = "";
+  document.getElementById('itemName').value = "";
+  document.getElementById('itemAmount').value = "";
+  document.getElementById('purchasedBy').value = "";
+  document.getElementById('itemImage').value = "";
+  document.getElementById('imagePreview').classList.add('hidden');
+
+  updateSummary();
+  const btn = document.getElementById('added-btn');
+  if (btn) {
+    btn.innerText = "Added!";
+    setTimeout(() => (btn.innerText = '\uff0b Add Item'), 2000);
+  }
+}
+
+// Updated Render Items function
+function renderItems() {
+  const table = document.getElementById("itemsTable");
+  if (!table) return;
+  table.innerHTML = "";
+
+  [...items].reverse().forEach((i, index) => {
+    const realIndex = items.length - 1 - index;
+    const actionButton = currentUser && currentUser.role === 'admin'
+      ? `<td class="p-2  sm:table-cell">
+           <button onclick="removeItem(${realIndex})" class="text-red-400 admin-only hover:underline">Remove</button>
+         </td>`
+      : '<td class="p-2 sm:table-cell"></td>';
+
+    const imageCell = i.image
+      ? `<td class="p-2">
+           <img src="${i.image}" alt="${i.name}" class="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-lg cursor-pointer" onclick="openImageModal('${i.image}', '${i.name}')">
+         </td>`
+      : '<td class="p-2"><div class="w-12 h-12 sm:w-16 sm:h-16 bg-gray-700 rounded-lg flex items-center justify-center"><span class="text-gray-400 text-xs">No Image</span></div></td>';
+
+    const row = `<tr class="border border-white/20">
+      <td class="p-2">${i.date}</td>
+      ${imageCell}
+      <td class="p-2">${i.name}</td>
+      <td class="p-2">₹${i.amount}</td>
+      <td class="p-2">${i.buyer}</td>
+      ${actionButton}
+    </tr>`;
+    table.innerHTML += row;
+  });
+}
+
+// Image Modal function
+function openImageModal(imageSrc, itemName) {
+  const modal = document.createElement('div');
+  modal.className = 'fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4';
+  modal.innerHTML = `
+    <div class="bg-[#1a1a1a] rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+      <div class="flex items-center justify-between p-4 border-b border-white/10">
+        <h3 class="text-white font-semibold text-lg">${itemName}</h3>
+        <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+      </div>
+      <div class="p-4 flex justify-center">
+        <img src="${imageSrc}" alt="${itemName}" class="max-w-full max-h-[70vh] object-contain rounded-lg">
+      </div>
+      <div class="p-4 border-t border-white/10 text-center">
+        <button onclick="this.closest('.fixed').remove()" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg transition">
+          Close
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  // Close modal when clicking outside image
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.remove();
+    }
+  });
+}
 
 
 

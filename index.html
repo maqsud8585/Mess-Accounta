@@ -40,7 +40,29 @@
       filter: invert(50%) sepia(100%) saturate(500%) hue-rotate(10deg);
       cursor: pointer;
     }
-  
+
+    /* File input styling */
+    input[type="file"]::file-selector-button {
+      background: #f97316;
+      color: white;
+      border: 0;
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    input[type="file"]::file-selector-button:hover {
+      background: #ea580c;
+    }
+
+    /* Image preview styling */
+    #previewImage {
+      max-width: 100%;
+      border: 2px solid #374151;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
   </style>
 </head>
 
@@ -118,7 +140,7 @@
                 <th class="p-2">Given</th>
                 <th class="p-2">Share</th>
                 <th class="p-2">Balance</th>
-                <th class="p-2 hidden sm:table-cell admin-only">Action</th>
+                <th class="p-2 sm:table-cell admin-only">Action</th>
               </tr>
             </thead>
             <tbody id="peopleTable"></tbody>
@@ -130,7 +152,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
         <!-- Add Person + Increase/Decrease Form-->
-        <div class="hidden sm:block rounded-xl shadow p-4 border border-white/10 admin-only">
+        <div class="sm:block rounded-xl shadow p-4 border border-white/10 admin-only">
           <h3 class="font-semibold mb-3 text-center sm:text-left">Add Person</h3>
           <div class="flex flex-col sm:flex-row gap-2">
             <input id="addName" type="text" placeholder="Name"
@@ -139,7 +161,9 @@
               class="border border-white/20 p-2 rounded w-full focus:outline-none">
             <input id="addDate" type="date" class="border border-white/20 p-2 rounded w-full focus:outline-none">
             <button onclick="addPerson()"
-              class="bg-[#FFFFFF]/10 cursor-pointer backdrop-blur-lg border border-[#FFFFFF]/20 text-white-400 px-4 py-2 rounded-xl hover:bg-[#FFFFFF]/20 transition w-full sm:w-auto">Add</button>
+              class="bg-[#FFFFFF]/10 cursor-pointer backdrop-blur-lg border border-[#FFFFFF]/20 text-white-400 rounded-xl hover:bg-[#FFFFFF]/20 transition-all duration-200 flex items-center justify-center w-full sm:w-20 h-10 sm:h-12 px-3 py-2">
+              <span class="text-sm sm:text-base">Add</span>
+            </button>
           </div>
 
           <h3 class="font-semibold mb-3 mt-5 text-center sm:text-left">Increase Amount</h3>
@@ -149,8 +173,9 @@
             <input id="incAmount" type="number" placeholder="Amount"
               class="border border-white/20 p-2 rounded w-full focus:outline-none">
             <button onclick="increaseAmount()"
-              class="bg-transparent cursor-pointer border border-[#0B8112]/30 text-green-400 px-3 py-1 rounded-xl hover:shadow-[0_4px_12px_rgba(16,195,28,0.7)] transition w-full sm:w-auto">
-              <img src="./images/increase.png" height="18" width="80">
+              class="bg-transparent cursor-pointer border border-[#0B8112]/30 text-green-400 rounded-xl hover:shadow-[0_4px_12px_rgba(16,195,28,0.7)] transition-all duration-200 flex items-center justify-center w-20 h-10 sm:w-24 sm:h-12 md:w-28 md:h-12">
+              <img src="./images/increase.png" alt="Increase"
+                class="w-16 h-4 sm:w-20 sm:h-5 md:w-24 md:h-6 object-contain">
             </button>
           </div>
 
@@ -161,8 +186,9 @@
             <input id="decAmount" type="number" placeholder="Amount"
               class="border border-white/20 p-2 rounded w-full focus:outline-none">
             <button onclick="decreaseAmount()"
-              class="bg-transparent cursor-pointer border border-[#A93A0B]/30 text-red-500 px-3 py-1 rounded-xl hover:shadow-[0_4px_12px_rgba(158,56,13,0.7)] transition w-full sm:w-auto">
-              <img src="./images/decrease.png" height="18" width="80">
+              class="bg-transparent cursor-pointer border border-[#A93A0B]/30 text-green-400 rounded-xl hover:shadow-[0_4px_12px_rgba(158,56,13,0.7)] transition-all duration-200 flex items-center justify-center w-20 h-10 sm:w-24 sm:h-12 md:w-28 md:h-12">
+              <img src="./images/decrease.png" alt="Increase"
+                class="w-16 h-4 sm:w-20 sm:h-5 md:w-24 md:h-6 object-contain">
             </button>
           </div>
         </div>
@@ -179,6 +205,15 @@
               class="border border-white/20 p-2 rounded focus:outline-none">
             <input id="purchasedBy" type="text" placeholder="Purchased By"
               class="border border-white/20 p-2 rounded focus:outline-none">
+            <!-- Image Upload -->
+            <div class="border border-white/20 rounded p-2">
+              <label class="block text-gray-400 text-sm mb-2">Item Photo (Optional)</label>
+              <input id="itemImage" type="file" accept="image/*"
+                class="w-full text-white text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-500 file:text-white hover:file:bg-orange-600">
+              <div id="imagePreview" class="mt-2 hidden">
+                <img id="previewImage" class="max-h-32 rounded-lg mx-auto">
+              </div>
+            </div>
             <button onclick="addItem()" id="added-btn"
               class="glow-btn text-orange-400 px-4 py-2 rounded-2xl backdrop-blur-lg border border-orange-500/20 bg-gradient-to-tr from-black/60 to-black/40 shadow-lg hover:scale-110 sm:w-auto justify-self-center active:scale-95 transition-all duration-300 ease-out cursor-pointer relative overflow-hidden">
               <div
