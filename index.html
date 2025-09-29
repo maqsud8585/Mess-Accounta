@@ -40,6 +40,7 @@
       filter: invert(50%) sepia(100%) saturate(500%) hue-rotate(10deg);
       cursor: pointer;
     }
+  
   </style>
 </head>
 
@@ -117,7 +118,7 @@
                 <th class="p-2">Given</th>
                 <th class="p-2">Share</th>
                 <th class="p-2">Balance</th>
-                <th class="p-2 hidden sm:table-cell">Action</th>
+                <th class="p-2 hidden sm:table-cell admin-only">Action</th>
               </tr>
             </thead>
             <tbody id="peopleTable"></tbody>
@@ -129,7 +130,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
         <!-- Add Person + Increase/Decrease Form-->
-        <div class="hidden sm:block rounded-xl shadow p-4 border border-white/10">
+        <div class="hidden sm:block rounded-xl shadow p-4 border border-white/10 admin-only">
           <h3 class="font-semibold mb-3 text-center sm:text-left">Add Person</h3>
           <div class="flex flex-col sm:flex-row gap-2">
             <input id="addName" type="text" placeholder="Name"
@@ -202,7 +203,7 @@
           </div>
         </button>
         <button onclick="saveAndClear()"
-          class="bg-[#FFFFFF]/10 backdrop-blur-lg border border-[#FFFFFF]/20 text-white-400 px-3 py-2 mx-1 rounded-xl hover:bg-[#FFFFFF]/20 transition sm:w-auto">
+          class="bg-[#FFFFFF]/10 backdrop-blur-lg border border-[#FFFFFF]/20 text-white-400 px-3 py-2 mx-1 rounded-xl hover:bg-[#FFFFFF]/20 transition sm:w-auto admin-only">
           Save and Clear
         </button>
       </div>
@@ -234,4 +235,5 @@
     </div>
   </div>
 </body>
+
 </html>

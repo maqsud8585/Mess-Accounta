@@ -4,8 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mess Accounta</title>
+  <title>Mess Accounta - Login</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="./script.js" defer></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');
 
@@ -16,19 +17,49 @@
 </head>
 
 <body class="bg-black">
-    <!-- Main Container -->
-    <div class="flex shadow items-center h-screen w-full">
-      <div class="bg-[#151515] rounded-2xl w-full backdrop-blur-sm sm:backdrop-blur-md border border-white/30 p-8 m-4 md:max-w-sm md:mx-auto">
+  <!-- Main Container -->
+  <div class="flex shadow items-center h-screen w-full">
+    <div
+      class="bg-[#151515] rounded-2xl w-full backdrop-blur-sm sm:backdrop-blur-md border border-white/30 p-8 m-4 md:max-w-sm md:mx-auto">
       <img src="./images/Mess Accounta-logo.svg" class="w-32 mx-auto my-10" alt="">
-        <form class="mb-4" action="/" method="post">
-          <div class="mb-4 md:w-full">
-            <input class="w-full text-white border border-white/20  rounded p-2 outline-none focus:shadow-outline" type="email" name="email" id="email" placeholder="Username">
-          </div>
-          <div class="mb-6 md:w-full">
-            <input class="w-full text-white border border-white/20 rounded p-2 outline-none focus:shadow-outline" type="password" name="password" id="password" placeholder="Password">
-          </div>
-          <button class="bg-orange-500 hover:bg-orange-400 text-white uppercase text-sm font-semibold px-4 py-2 rounded">Login</button>
-        </form>
-        <a class="text-white text-center text-sm" href="">Forgot password?</a>
+
+      <!-- Login Form -->
+      <div class="mb-4">
+        <input id="username"
+          class="w-full text-white bg-transparent border border-white/20 rounded p-2 mb-4 outline-none focus:shadow-outline"
+          type="text" placeholder="Username">
+        <input id="password"
+          class="w-full text-white bg-transparent border border-white/20 rounded p-2 outline-none focus:shadow-outline"
+          type="password" placeholder="Password">
+
+        <!-- User Type Selection -->
+        <div class="flex space-x-4 mt-4">
+          <label class="flex items-center">
+            <input type="radio" name="userType" value="admin" class="mr-2" checked>
+            <span class="text-white">Admin</span>
+          </label>
+          <label class="flex items-center">
+            <input type="radio" name="userType" value="user" class="mr-2">
+            <span class="text-white">User</span>
+          </label>
+        </div>
+      </div>
+
+      <button onclick="login()"
+        class="w-full bg-orange-500 hover:bg-orange-400 text-white uppercase text-sm font-semibold px-4 py-2 rounded">
+        Login
+      </button>
+
+      <p id="errorMsg" class="text-red-500 text-center text-sm mt-3 hidden">Invalid username or password!</p>
+
+      <!-- Demo Credentials -->
+      <div class="mt-6 p-4 bg-black/30 rounded-lg border border-white/10">
+        <p class="text-gray-400 text-sm font-semibold mb-2">Demo Credentials:</p>
+        <p class="text-gray-400 text-xs">Admin: admin / admin123</p>
+        <p class="text-gray-400 text-xs">User: user / user123</p>
+      </div>
     </div>
   </div>
+</body>
+
+</html>

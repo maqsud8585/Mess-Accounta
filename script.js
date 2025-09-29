@@ -1,3 +1,134 @@
+// Authentication system
+const users = [
+  { username: 'Max', password: 'admin@123', role: 'admin' },
+  { username: 'Roommate', password: 'user@123', role: 'user' }
+];
+
+let currentUser = null;
+
+// Check if user is logged in
+function checkAuth() {
+  const user = localStorage.getItem('currentUser');
+  if (user) {
+    currentUser = JSON.parse(user);
+    applyUserPermissions();
+    return true;
+  }
+  return false;
+}
+
+// Login function
+function login() {
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+  const userType = document.querySelector('input[name="userType"]:checked').value;
+
+  const user = users.find(u =>
+    u.username === username &&
+    u.password === password &&
+    u.role === userType
+  );
+
+  if (user) {
+    currentUser = user;
+    localStorage.setItem('currentUser', JSON.stringify(user));
+    window.location.href = './index.html';
+  } else {
+    document.getElementById('errorMsg').classList.remove('hidden');
+  }
+}
+
+// Logout function
+function logout() {
+  localStorage.removeItem('currentUser');
+  currentUser = null;
+  window.location.href = './authen.html';
+}
+
+// Apply user permissions based on role
+function applyUserPermissions() {
+  if (!currentUser) return;
+
+  if (currentUser.role === 'user') {
+    // Hide admin-only elements
+    const adminElements = document.querySelectorAll('.admin-only');
+    adminElements.forEach(el => {
+      el.style.display = 'none';
+    });
+
+    // Disable admin actions
+    const adminActions = document.querySelectorAll('.admin-action');
+    adminActions.forEach(el => {
+      el.disabled = true;
+      el.classList.add('opacity-50', 'cursor-not-allowed');
+    });
+
+    // Update navbar to show logout
+    updateNavbar();
+  }
+
+  // Add logout button to navbar for both roles
+  updateNavbar();
+}
+
+// Update navbar with user info and logout
+function updateNavbar() {
+  const navbar = document.querySelector('nav .max-w-6xl');
+  if (!navbar) return;
+  
+  // Check if user dropdown already exists
+  if (document.getElementById('userDropdown')) return;
+  
+  const userDropdown = document.createElement('div');
+  userDropdown.className = 'relative';
+  userDropdown.id = 'userDropdown';
+  userDropdown.innerHTML = `
+    <button id="userMenuBtn" class="flex items-center space-x-2 border border-white/20 p-2 rounded-xl text-gray-300 hover:text-white transition">
+      <div class="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+        ${currentUser.username.charAt(0).toUpperCase()}
+      </div>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+      </svg>
+    </button>
+    
+    <div id="userDropdownMenu" class="absolute right-0 mt-2 w-48 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-xl py-2 hidden z-50 backdrop-blur-md">
+      <div class="px-4 py-2 border-b border-white/10">
+        <p class="text-white font-medium">${currentUser.username}</p>
+        <p class="text-gray-400 text-sm capitalize">${currentUser.role}</p>
+      </div>
+      <button onclick="logout()" class="w-full text-left px-4 py-2 text-red-400 hover:bg-red-500/10 hover:text-red-300 transition flex items-center space-x-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+        </svg>
+        <span>Logout</span>
+      </button>
+    </div>
+  `;
+  
+  navbar.appendChild(userDropdown);
+  
+  // Add dropdown toggle functionality
+  const userMenuBtn = document.getElementById('userMenuBtn');
+  const userDropdownMenu = document.getElementById('userDropdownMenu');
+  
+  userMenuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    userDropdownMenu.classList.toggle('hidden');
+  });
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', () => {
+    userDropdownMenu.classList.add('hidden');
+  });
+}
+
+// Protect pages - add this to each page's script
+function protectPage() {
+  if (!checkAuth()) {
+    window.location.href = './authen.html';
+  }
+}
 // Toggle Mobile Menu
 const menuBtn = document.getElementById("menuBtn");
 const mobileMenu = document.getElementById("mobileMenu");
@@ -72,6 +203,13 @@ function renderPeople() {
   if (!table) return;
   table.innerHTML = "";
   people.forEach((p, index) => {
+    const actionButtons = currentUser && currentUser.role === 'admin'
+      ? `<td class="p-2 hidden sm:table-cell">
+           <button onclick="setLeaveDate(${index})" class="text-blue-400 hover:underline">Set Leave</button>
+           <button onclick="removePerson(${index})" class="text-red-400 ml-3 hover:underline">Remove</button>
+         </td>`
+      : '<td class="p-2 hidden sm:table-cell"></td>';
+
     const row = `<tr class="border border-white/20">
       <td class="p-2">${p.date || "-"}</td>
       <td class="p-2">${p.name}</td>
@@ -80,10 +218,7 @@ function renderPeople() {
       <td class="p-2 ${p.balance < 0 ? "text-red-500" : "text-green-600"} font-semibold">
         ${p.balance >= 0 ? "+" : ""}${p.balance || 0}
       </td>
-      <td class="p-2 hidden sm:table-cell">
-        <button onclick="setLeaveDate(${index})" class="text-blue-400 hover:underline">Set Leave</button>
-        <button onclick="removePerson(${index})" class="text-red-400 ml-3 hover:underline">Remove</button>
-      </td>
+      ${actionButtons}
     </tr>`;
     table.innerHTML += row;
   });
@@ -97,14 +232,18 @@ function renderItems() {
 
   [...items].reverse().forEach((i, index) => {
     const realIndex = items.length - 1 - index;
+    const actionButton = currentUser && currentUser.role === 'admin'
+      ? `<td class="p-2 hidden sm:table-cell">
+           <button onclick="removeItem(${realIndex})" class="text-red-400 hover:underline">Remove</button>
+         </td>`
+      : '<td class="p-2 hidden sm:table-cell"></td>';
+
     const row = `<tr class="border border-white/20">
       <td class="p-2">${i.date}</td>
       <td class="p-2">${i.name}</td>
       <td class="p-2">₹${i.amount}</td>
       <td class="p-2">${i.buyer}</td>
-      <td class="p-2 hidden sm:table-cell">
-        <button onclick="removeItem(${realIndex})" class="text-red-400 hover:underline">Remove</button>
-      </td>
+      ${actionButton}
     </tr>`;
     table.innerHTML += row;
   });
@@ -317,8 +456,23 @@ function openSettlement() {
   modal.querySelector("#closeSettlement").addEventListener("click", () => modal.remove());
 }
 
-// Init
-updateSummary();
+// Initialize when DOM loads
+document.addEventListener("DOMContentLoaded", () => {
+  // Check authentication for all pages except login
+  if (!window.location.href.includes('authen.html')) {
+    protectPage();
+  }
+
+  // Initialize app if on main page
+  if (document.getElementById('peopleTable')) {
+    updateSummary();
+  }
+
+  // Initialize previous records if on that page
+  if (document.getElementById('recordsList')) {
+    renderPreviousRecords();
+  }
+});
 
 function saveAndClear() {
   const confirmSave = confirm("Do you want to save and clear the current data?");
@@ -486,13 +640,9 @@ function renderPreviousRecords() {
               </table>
             ` : `<p class="text-gray-400">No settlements recorded.</p>`}
 
+            ${currentUser && currentUser.role === 'admin' ? `
             <button onclick="deleteRecord(${index})" 
-              class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg mt-3">
-              Delete Record
-            </button>
-          </div>
-        `;
-
+             class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg mt-3"> Delete Record </button>` : ''}`;
     container.appendChild(card);
   });
 }
