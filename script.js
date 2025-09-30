@@ -1,10 +1,16 @@
-// Authentication system
-const users = [
-  { username: 'Max', password: 'admin@123', role: 'admin' },
-  { username: 'Roommate', password: 'user@123', role: 'user' }
+// ---------------- AUTH SYSTEM ----------------
+
+// Load users from localStorage or set default admin
+let users = JSON.parse(localStorage.getItem("users")) || [
+  { username: 'Max', password: 'admin@123', role: 'admin' }
 ];
 
 let currentUser = null;
+
+// Save users
+function saveUsers() {
+  localStorage.setItem("users", JSON.stringify(users));
+}
 
 // Check if user is logged in
 function checkAuth() {
@@ -19,79 +25,138 @@ function checkAuth() {
 
 // Login function
 function login() {
-  const username = document.getElementById('username').value;
-  const password = document.getElementById('password').value;
-  const userType = document.querySelector('input[name="userType"]:checked').value;
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
 
-  const user = users.find(u =>
-    u.username === username &&
-    u.password === password &&
-    u.role === userType
-  );
+  const user = users.find(u => u.username === username && u.password === password);
 
   if (user) {
     currentUser = user;
-    localStorage.setItem('currentUser', JSON.stringify(user));
+    localStorage.setItem("currentUser", JSON.stringify(user));
     window.location.href = './index.html';
   } else {
     document.getElementById('errorMsg').classList.remove('hidden');
   }
 }
 
-// Logout function
+// Logout
 function logout() {
   localStorage.removeItem('currentUser');
   currentUser = null;
   window.location.href = './authen.html';
 }
 
-// Apply user permissions based on role
+// Apply permissions
 function applyUserPermissions() {
   if (!currentUser) return;
 
   if (currentUser.role === 'user') {
     // Hide admin-only elements
-    const adminElements = document.querySelectorAll('.admin-only');
-    adminElements.forEach(el => {
-      el.style.display = 'none';
-    });
-
+    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
     // Disable admin actions
-    const adminActions = document.querySelectorAll('.admin-action');
-    adminActions.forEach(el => {
+    document.querySelectorAll('.admin-action').forEach(el => {
       el.disabled = true;
       el.classList.add('opacity-50', 'cursor-not-allowed');
     });
-
-    // Update navbar to show logout
-    updateNavbar();
+    // Set purchasedBy field to current user's username if present
+    const purchasedBy = document.getElementById("purchasedBy");
+    if (purchasedBy) purchasedBy.value = currentUser.username;
   }
 
-  // Add logout button to navbar for both roles
+  // Navbar
   updateNavbar();
 }
 
-// Update navbar with user info and logout
+// ---------------- USER MANAGEMENT (ADMIN) ----------------
+
+// Add new user
+function addUser() {
+  const username = document.getElementById("newUsername").value.trim();
+  const password = document.getElementById("newPassword").value.trim();
+
+  if (!username || !password) {
+    alert("Please enter both username and password!");
+    return;
+  }
+
+  if (users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
+    alert("Username already exists!");
+    return;
+  }
+
+  users.push({ username, password, role: "user" });
+  saveUsers();
+  renderUsers();
+
+  document.getElementById("newUsername").value = "";
+  document.getElementById("newPassword").value = "";
+  alert("✅ User added successfully!");
+}
+
+// Reset password
+function resetPassword(username) {
+  const newPass = prompt(`Enter new password for ${username}:`);
+  if (!newPass) return;
+
+  const user = users.find(u => u.username === username);
+  if (user) {
+    user.password = newPass;
+    saveUsers();
+    alert("✅ Password reset successfully!");
+  }
+}
+
+// Delete user
+function deleteUser(username) {
+  if (!confirm(`Are you sure you want to delete ${username}?`)) return;
+  users = users.filter(u => u.username !== username);
+  saveUsers();
+  renderUsers();
+  alert("❌ User deleted!");
+}
+
+// Render users in admin dashboard
+function renderUsers() {
+  const table = document.getElementById("userTable");
+  if (!table) return;
+  table.innerHTML = "";
+
+  users.forEach(u => {
+    if (u.role === "admin") return; // skip admin
+    const row = `
+      <tr class="border border-white/10">
+        <td class="p-2">${u.username}</td>
+        <td class="p-2">${u.role}</td>
+        <td class="p-2">
+          <button onclick="resetPassword('${u.username}')" class="text-blue-400 hover:underline">Reset</button>
+          <button onclick="deleteUser('${u.username}')" class="text-red-400 hover:underline ml-2">Delete</button>
+        </td>
+      </tr>
+    `;
+    table.innerHTML += row;
+  });
+}
+
+// ---------------- NAVBAR ----------------
+
 function updateNavbar() {
   const navbar = document.querySelector('nav .max-w-6xl');
   if (!navbar) return;
-  
-  // Check if user dropdown already exists
-  if (document.getElementById('userDropdown')) return;
-  
+
+  if (document.getElementById('userDropdown')) return; // prevent duplicates
+
   const userDropdown = document.createElement('div');
   userDropdown.className = 'relative';
   userDropdown.id = 'userDropdown';
   userDropdown.innerHTML = `
-    <button id="userMenuBtn" class="flex items-center space-x-2 border border-white/20 p-2 rounded-xl text-gray-300 hover:text-white transition">
+    <button id="userMenuBtn" class="flex items-center space-x-2  text-gray-300 hover:text-white transition">
       <div class="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
         ${currentUser.username.charAt(0).toUpperCase()}
       </div>
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"/>
       </svg>
     </button>
-    
     <div id="userDropdownMenu" class="absolute right-0 mt-2 w-48 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-xl py-2 hidden z-50 backdrop-blur-md">
       <div class="px-4 py-2 border-b border-white/10">
         <p class="text-white font-medium">${currentUser.username}</p>
@@ -105,31 +170,27 @@ function updateNavbar() {
       </button>
     </div>
   `;
-  
   navbar.appendChild(userDropdown);
-  
-  // Add dropdown toggle functionality
+
   const userMenuBtn = document.getElementById('userMenuBtn');
   const userDropdownMenu = document.getElementById('userDropdownMenu');
-  
-  userMenuBtn.addEventListener('click', (e) => {
+
+  userMenuBtn.addEventListener('click', e => {
     e.stopPropagation();
     userDropdownMenu.classList.toggle('hidden');
   });
-  
-  // Close dropdown when clicking outside
-  document.addEventListener('click', () => {
-    userDropdownMenu.classList.add('hidden');
-  });
+  document.addEventListener('click', () => userDropdownMenu.classList.add('hidden'));
 }
 
-// Protect pages - add this to each page's script
+// ---------------- PROTECT PAGES ----------------
+
 function protectPage() {
   if (!checkAuth()) {
     window.location.href = './authen.html';
   }
 }
-// Toggle Mobile Menu
+
+// ---------------- TOGGLE MOBILE MENU ----------------
 const menuBtn = document.getElementById("menuBtn");
 const mobileMenu = document.getElementById("mobileMenu");
 if (menuBtn && mobileMenu) {
@@ -138,6 +199,7 @@ if (menuBtn && mobileMenu) {
   });
 }
 
+// ---------------- DATA ----------------
 let people = JSON.parse(localStorage.getItem("people")) || [];
 let items = JSON.parse(localStorage.getItem("items")) || [];
 
@@ -147,7 +209,7 @@ function saveData() {
   localStorage.setItem("items", JSON.stringify(items));
 }
 
-// Summary update
+// ---------------- SUMMARY & BALANCES ----------------
 function updateSummary() {
   const given = people.reduce((sum, p) => sum + (p.given || 0), 0);
   const spent = items.reduce((sum, i) => sum + (i.amount || 0), 0);
@@ -165,13 +227,11 @@ function updateSummary() {
   saveData();
 }
 
-// Balance calculation
 function updateBalances() {
   if (people.length === 0) return;
 
   people.forEach(p => {
     let totalShare = 0;
-
     const eligibleItems = items.filter(item => {
       const itemDate = new Date(item.date);
       const joinDate = new Date(p.date);
@@ -186,8 +246,7 @@ function updateBalances() {
         const itemDate = new Date(item.date);
         return joinDate <= itemDate && (!leaveDate || itemDate <= leaveDate);
       });
-      const itemShare = item.amount / eligibleMembers.length;
-      totalShare += itemShare;
+      totalShare += item.amount / eligibleMembers.length;
     });
 
     p.share = parseFloat(totalShare.toFixed(2));
@@ -197,7 +256,7 @@ function updateBalances() {
   renderPeople();
 }
 
-// Render People Table
+// ---------------- RENDER PEOPLE ----------------
 function renderPeople() {
   const table = document.getElementById("peopleTable");
   if (!table) return;
@@ -224,7 +283,7 @@ function renderPeople() {
   });
 }
 
-// Render Items Table
+// ---------------- RENDER ITEMS ----------------
 function renderItems() {
   const table = document.getElementById("itemsTable");
   if (!table) return;
@@ -249,7 +308,7 @@ function renderItems() {
   });
 }
 
-// Add Person
+// ---------------- ADD/REMOVE PEOPLE ----------------
 function addPerson() {
   const name = document.getElementById("addName").value.trim();
   const amount = Number(document.getElementById("addAmount").value);
@@ -270,7 +329,6 @@ function addPerson() {
   updateSummary();
 }
 
-// Increase Amount
 function increaseAmount() {
   const name = document.getElementById("incName").value.trim();
   const amount = Number(document.getElementById("incAmount").value);
@@ -288,7 +346,6 @@ function increaseAmount() {
   updateSummary();
 }
 
-// Decrease Amount
 function decreaseAmount() {
   const name = document.getElementById("decName").value.trim();
   const amount = Number(document.getElementById("decAmount").value);
@@ -310,7 +367,7 @@ function decreaseAmount() {
   updateSummary();
 }
 
-// Add Item
+// ---------------- ADD ITEM ----------------
 function addItem() {
   const date = document.getElementById("itemDate").value;
   const name = document.getElementById("itemName").value;
@@ -326,14 +383,22 @@ function addItem() {
   document.getElementById("purchasedBy").value = "";
 
   updateSummary();
-  const btn = document.getElementById("added-btn");
-  if (btn) {
-    btn.innerText = "Added!";
-    setTimeout(() => (btn.innerText = '\uff0b Add Item'), 2000);
+  // --- POPUP LOGIC START ---
+  const popup = document.getElementById("popup-message");
+  if (popup) {
+    // 1. Show popup
+    popup.classList.remove("opacity-0");
+    popup.classList.add("opacity-100");
+
+    // 2. Hide after 1s
+    setTimeout(() => {
+      popup.classList.remove("opacity-100");
+      popup.classList.add("opacity-0");
+    }, 2000);
   }
 }
 
-// Set Leave Date
+// ---------------- ADMIN ACTIONS ----------------
 function setLeaveDate(index) {
   const leaveDate = prompt("Enter leave date (YYYY-MM-DD):");
   if (leaveDate) {
@@ -342,19 +407,18 @@ function setLeaveDate(index) {
   }
 }
 
-// Remove Person
 function removePerson(index) {
   if (!confirm("Are you sure you want to remove this person?")) return;
   people.splice(index, 1);
   updateSummary();
 }
 
-// Remove Item
 function removeItem(index) {
   items.splice(index, 1);
   updateSummary();
 }
 
+// ---------------- SETTLEMENT ----------------
 // Settlement Modal
 function openSettlement() {
   const modal = document.createElement("div");
@@ -473,6 +537,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderPreviousRecords();
   }
 });
+// ---------------- SAVE & CLEAR ----------------
 
 function saveAndClear() {
   const confirmSave = confirm("Do you want to save and clear the current data?");
@@ -672,9 +737,17 @@ function deleteRecord(index) {
 
   alert("Record deleted successfully!");
 }
-
-
 renderPreviousRecords();
-
-
-
+// ---------------- INIT ----------------
+document.addEventListener("DOMContentLoaded", () => {
+  if (!window.location.href.includes('authen.html')) {
+    protectPage();
+  }
+  if (document.getElementById('peopleTable')) {
+    updateSummary();
+  }
+  if (document.getElementById('recordsList')) {
+    renderPreviousRecords();
+  }
+  // User role-based UI logic is now handled in applyUserPermissions()
+});

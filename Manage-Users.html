@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Purchase History</title>
+  <title>Manage Users</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <script src="./script.js" defer></script>
   <style>
@@ -16,6 +16,7 @@
   }
 </style>
 </head>
+
 <body class="bg-black p-3 sm:p-6 pt-20">
   <!-- Navbar -->
   <nav class="fixed top-0 left-0 w-full z-50 bg-black/60 backdrop-blur-md">
@@ -50,66 +51,36 @@
     </div>
   </nav>
 
-  <!-- Purchase History Table -->
-  <div
-    class="bg-[#151515] border border-white/10 rounded-2xl w-full backdrop-blur-sm sm:border border-black mt-2 sm:mt-20 lg:w-2/3 mx-auto p-4 sm:p-6 shadow-lg">
-    <div class="max-w-6xl mx-auto">
-      <h1 class="text-left text-2xl font-bold text-gray-400 px-4">History</h1>
+    <!-- Manage Users Section -->
+    <div
+        class="bg-[#151515] border admin-only border-white/10 rounded-2xl w-full backdrop-blur-sm sm:border border-black mt-2 sm:mt-20 lg:w-2/3 mx-auto p-4 sm:p-6 shadow-lg">
+        <div class="max-w-6xl mx-auto">
+            <h1 class="text-2xl font-bold text-gray-400 mb-6">Manage Users</h1>
 
-      <div class="shadow mt-6 overflow-hidden border border-[white]/20">
-        <div id="peopleTableWrapper2" class="overflow-x-auto max-h-[70vh]">
-          <table class="w-full text-sm sm:text-base">
-            <thead id="peopleTableHead2" class="sticky top-0 bg-[#222222] text-white">
-              <tr>
-                <th class="p-2">Date</th>
-                <th class="p-2">Item</th>
-                <th class="p-2">Amount</th>
-                <th class="p-2">Purchased By</th>
-                <th class="p-2 admin-only sm:table-cell">Action</th>
-              </tr>
-            </thead>
-            <tbody id="itemsTable"></tbody>
-          </table>
+            <!-- Add New User -->
+            <div class="flex flex-col sm:flex-row gap-2 mb-6">
+                <input id="newUsername" type="text" placeholder="Username"
+                    class="border border-white/20 p-2 rounded w-full focus:outline-none">
+                <input id="newPassword" type="password" placeholder="Password"
+                    class="border border-white/20 p-2 rounded w-full focus:outline-none">
+                <button onclick="addUser()"
+                    class="bg-[#D8D8D8] text-gray-800 px-6 py-1 rounded-xl hover:bg-[#FFFFFF] transition">Add</button>
+                <button onclick="renderUsers()"
+                    class="bg-[#FFFFFF]/10 px-6 py-1 rounded-xl hover:bg-[#FFFFFF]/20 transition">View</button>
+            </div>
+
+            <!-- User List -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm border border-white/20 rounded-xl overflow-hidden">
+                    <thead class="bg-white/10">
+                        <tr>
+                            <th class="p-2">Username</th>
+                            <th class="p-2">Role</th>
+                            <th class="p-2">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTable"></tbody>
+                </table>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-
-  <script>
-    // Render items when this page loads
-    document.addEventListener("DOMContentLoaded", () => {
-      renderItems();
-    });
-
-    // Add authentication check
-    document.addEventListener("DOMContentLoaded", () => {
-      // Check if user is authenticated
-      const user = localStorage.getItem('currentUser');
-      if (!user) {
-        window.location.href = './authen.html';
-        return;
-      }
-
-      currentUser = JSON.parse(user);
-      applyUserPermissions();
-      renderItems();
-    });
-
-    // Apply user permissions
-    function applyUserPermissions() {
-      if (!currentUser || currentUser.role === 'admin') return;
-
-      // Hide action column for users
-      const actionHeader = document.querySelector('#peopleTableHead2 th:last-child');
-      const actionCells = document.querySelectorAll('#itemsTable td:last-child');
-
-      if (actionHeader) actionHeader.style.display = 'none';
-      actionCells.forEach(cell => cell.style.display = 'none');
-
-      // Update navbar
-      updateNavbar();
-    }
-  </script>
-</body>
-
-</html>
