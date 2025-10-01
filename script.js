@@ -217,7 +217,7 @@ function resetNotifications() {
       localStorage.removeItem(key);
     }
   });
-  
+
   renderNotifications();
 }
 
@@ -236,15 +236,19 @@ function updateNavbar() {
   <!-- Notifications -->
   <div id="notificationsDropdown" class="relative">
     <button id="notifBtn" class="relative text-xl">
-      <img src="./images/notification-bell.png" class="h-6 inline w-6" alt="Notifications">
+      <img src="./images/bell.png" class="h-6 inline w-6" alt="Notifications">
       <span id="notifCount" class="absolute -top-1 -right-2 bg-red-500 text-white text-xs px-1 rounded-full hidden"></span>
     </button>
-    <div id="notifMenu" class="absolute right-0 mt-2 w-72 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-xl py-2 hidden z-50">
-   <div class="flex justify-between items-center px-4 py-2 border-b border-white/10">
+    <div id="notifMenu" 
+     class="fixed top-20 left-1/2 -translate-x-1/2 w-72 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-xl py-2 hidden z-50
+            md:absolute md:top-auto md:left-auto md:translate-x-0 md:right-0 md:mt-2">
+  <div class="flex justify-between items-center px-4 py-2 border-b border-white/10">
     <span class="text-gray-300 text-sm">Notifications</span>
-    <button onclick="clearNotifications()" class="text-xs text-blue-400 hover:underline">Mark as view</button>
-   </div>
-   <div id="notifList" class="max-h-64 overflow-y-auto text-sm text-gray-300"></div>
+    <button onclick="clearNotifications()" class="text-xs text-blue-400 hover:underline">
+      Mark as view
+    </button>
+  </div>
+  <div id="notifList" class="max-h-64 overflow-y-auto text-sm text-gray-300"></div>
   </div>
   </div>
 
@@ -766,8 +770,8 @@ function saveAndClear() {
   // --- clear current data and persist
   people = [];
   items = [];
-  saveData();  
-  updateSummary(); 
+  saveData();
+  updateSummary();
   resetNotifications();// reset all users' read state to force seeing new notification
 
   if (document.getElementById("recordsList")) {
@@ -909,14 +913,14 @@ function deleteRecord(index) {
   if (!confirm("Are you sure you want to delete this record?")) return;
   let records = JSON.parse(localStorage.getItem("previousRecords")) || [];
   if (index < 0 || index >= records.length) return;
-  
+
   // Get the record before deleting it to access its dateSaved field
   const deletedRecord = records[index];
-  
+
   records.splice(index, 1);
   localStorage.setItem("previousRecords", JSON.stringify(records));
   renderPreviousRecords();
-  
+
   // Format the date from the record's dateSaved field
   const recordDate = new Date(deletedRecord.dateSaved);
   const formattedDate = recordDate.toLocaleDateString('en-US', {
@@ -924,7 +928,7 @@ function deleteRecord(index) {
     month: 'short',
     day: 'numeric'
   });
-  
+
   addNotification(`${currentUser && currentUser.username ? currentUser.username : 'Someone'} deleted saved record from ${formattedDate}`);
   alert("Record deleted successfully!");
 }
