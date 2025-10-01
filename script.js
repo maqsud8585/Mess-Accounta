@@ -70,7 +70,6 @@ function applyUserPermissions() {
 
 // ---------------- USER MANAGEMENT (ADMIN) ----------------
 
-// Add new user
 function addUser() {
   const username = document.getElementById("newUsername").value.trim();
   const password = document.getElementById("newPassword").value.trim();
@@ -94,7 +93,6 @@ function addUser() {
   alert("✅ User added successfully!");
 }
 
-// Reset password
 function resetPassword(username) {
   const newPass = prompt(`Enter new password for ${username}:`);
   if (!newPass) return;
@@ -107,7 +105,6 @@ function resetPassword(username) {
   }
 }
 
-// Delete user
 function deleteUser(username) {
   if (!confirm(`Are you sure you want to delete ${username}?`)) return;
   users = users.filter(u => u.username !== username);
@@ -116,14 +113,13 @@ function deleteUser(username) {
   alert("❌ User deleted!");
 }
 
-// Render users in admin dashboard
 function renderUsers() {
   const table = document.getElementById("userTable");
   if (!table) return;
   table.innerHTML = "";
 
   users.forEach(u => {
-    if (u.role === "admin") return; // skip admin
+    if (u.role === "admin") return;
     const row = `
       <tr class="border border-white/10">
         <td class="p-2">${u.username}</td>
@@ -138,33 +134,118 @@ function renderUsers() {
   });
 }
 
+// ---------------- NOTIFICATIONS ----------------
+
+// Global notifications store
+function getAllNotifications() {
+  return JSON.parse(localStorage.getItem("notifications")) || [];
+}
+function saveAllNotifications(notifs) {
+  localStorage.setItem("notifications", JSON.stringify(notifs));
+}
+
+// Per-user read state
+function getReadNotifications(username) {
+  return JSON.parse(localStorage.getItem(`notifications_read_${username}`)) || [];
+}
+function saveReadNotifications(username, readIds) {
+  localStorage.setItem(`notifications_read_${username}`, JSON.stringify(readIds));
+}
+
+// Add global notification
+function addNotification(message) {
+  let allNotifs = getAllNotifications();
+  const newNotif = {
+    id: Date.now(),
+    message,
+    time: new Date().toLocaleString()
+  };
+  allNotifs.push(newNotif);
+  saveAllNotifications(allNotifs);
+  renderNotifications();
+}
+
+// Render notifications
+function renderNotifications() {
+  const notifCount = document.getElementById("notifCount");
+  const notifList = document.getElementById("notifList");
+  if (!notifCount || !notifList || !currentUser) return;
+
+  const allNotifs = getAllNotifications();
+  const readIds = getReadNotifications(currentUser.username);
+
+  notifList.innerHTML = "";
+
+  const unread = allNotifs.filter(n => !readIds.includes(n.id));
+  if (unread.length === 0) {
+    notifCount.classList.add("hidden");
+  } else {
+    notifCount.textContent = unread.length;
+    notifCount.classList.remove("hidden");
+  }
+
+  if (allNotifs.length === 0) {
+    notifList.innerHTML = `<p class="px-4 py-2 text-gray-400">No notifications</p>`;
+  } else {
+    allNotifs.slice().reverse().forEach(n => {
+      const isRead = readIds.includes(n.id);
+      notifList.innerHTML += `
+        <div class="px-4 py-2 hover:bg-white/10 cursor-pointer border-b border-white/5 ${isRead ? 'opacity-50' : ''}">
+          <p>${n.message}</p>
+          <p class="text-xs text-gray-500">${n.time}</p>
+        </div>`;
+    });
+  }
+}
+
+// Clear notifications
+function clearNotifications() {
+  if (!currentUser) return;
+  const allNotifs = getAllNotifications();
+  const allIds = allNotifs.map(n => n.id);
+  saveReadNotifications(currentUser.username, allIds);
+  renderNotifications();
+}
+// Reset all notifications (admin)
+function resetNotifications() {
+  localStorage.removeItem("notifications");
+  if (currentUser) {
+    localStorage.removeItem(`notifications_read_${currentUser.username}`);
+  }
+  Object.keys(localStorage).forEach(key => {
+    if (key.startsWith('notifications_read_')) {
+      localStorage.removeItem(key);
+    }
+  });
+  
+  renderNotifications();
+}
+
+
 // ---------------- NAVBAR ----------------
 
 function updateNavbar() {
   const navbar = document.querySelector('nav .max-w-6xl');
   if (!navbar) return;
-
-  if (document.getElementById('userDropdown')) return; // prevent duplicates
+  if (document.getElementById('userDropdown')) return;
 
   const userDropdown = document.createElement('div');
-  userDropdown.className = 'relative flex items-center space-x-4';
+  userDropdown.className = 'relative flex items-center space-x-8';
   userDropdown.id = 'userDropdown';
   userDropdown.innerHTML = `
   <!-- Notifications -->
   <div id="notificationsDropdown" class="relative">
     <button id="notifBtn" class="relative text-xl">
-      🔔
+      <img src="./images/notification-bell.png" class="h-6 inline w-6" alt="Notifications">
       <span id="notifCount" class="absolute -top-1 -right-2 bg-red-500 text-white text-xs px-1 rounded-full hidden"></span>
     </button>
     <div id="notifMenu" class="absolute right-0 mt-2 w-72 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-xl py-2 hidden z-50">
    <div class="flex justify-between items-center px-4 py-2 border-b border-white/10">
     <span class="text-gray-300 text-sm">Notifications</span>
-    <button onclick="clearNotifications()" class="text-xs text-blue-400 hover:underline">Clear All</button>
+    <button onclick="clearNotifications()" class="text-xs text-blue-400 hover:underline">Mark as view</button>
    </div>
    <div id="notifList" class="max-h-64 overflow-y-auto text-sm text-gray-300"></div>
   </div>
-
-
   </div>
 
   <!-- User Menu -->
@@ -202,46 +283,8 @@ function updateNavbar() {
     userDropdownMenu.classList.toggle('hidden');
   });
   document.addEventListener('click', () => userDropdownMenu.classList.add('hidden'));
-}
 
-function getNotifications(username) {
-  return JSON.parse(localStorage.getItem(`notifications_${username}`)) || [];
-}
-
-function saveNotifications(username, notifs) {
-  localStorage.setItem(`notifications_${username}`, JSON.stringify(notifs));
-}
-
-
-// render notifications
-function renderNotifications() {
-  const notifCount = document.getElementById("notifCount");
-  const notifList = document.getElementById("notifList");
-  if (!notifCount || !notifList || !currentUser) return;
-
-  const notifs = getNotifications(currentUser.username);
-
-  notifList.innerHTML = "";
-  if (notifs.length === 0) {
-    notifList.innerHTML = `<p class="px-4 py-2 text-gray-400">No notifications</p>`;
-    notifCount.classList.add("hidden");
-  } else {
-    notifCount.textContent = notifs.length;
-    notifCount.classList.remove("hidden");
-
-    notifs.slice().reverse().forEach(n => {
-      notifList.innerHTML += `
-        <div class="px-4 py-2 hover:bg-white/10 cursor-pointer border-b border-white/5">
-          <p>${n.message}</p>
-          <p class="text-xs text-gray-500">${n.time}</p>
-        </div>`;
-    });
-  }
-}
-
-
-// Dropdown toggle
-document.addEventListener("DOMContentLoaded", () => {
+  // Notifications dropdown
   const notifBtn = document.getElementById("notifBtn");
   const notifMenu = document.getElementById("notifMenu");
   if (notifBtn) {
@@ -252,17 +295,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   document.addEventListener("click", () => notifMenu?.classList.add("hidden"));
   renderNotifications();
-});
-
-function clearNotifications() {
-  if (!currentUser) return;
-  saveNotifications(currentUser.username, []);
-  renderNotifications();
 }
-
-
 // ---------------- PROTECT PAGES ----------------
-
 function protectPage() {
   if (!checkAuth()) {
     window.location.href = './authen.html';
@@ -414,25 +448,14 @@ function addPerson() {
     return;
   }
 
-  // Add new person
   people.push({ name, given: amount, date, share: 0, balance: 0, leaveDate: null });
 
-  // Clear form fields
   document.getElementById("addName").value = "";
   document.getElementById("addAmount").value = "";
   document.getElementById("addDate").value = "";
 
-  // Update summary
   updateSummary();
-
-  // Add notification
-  let notifs = getNotifications(currentUser.username);
-  notifs.push({
-    message: `${currentUser.username} added new person "${name}" with ₹${amount}`,
-    time: new Date().toLocaleString()
-  });
-  saveNotifications(currentUser.username, notifs);
-  renderNotifications();
+  addNotification(`${currentUser.username} added new person "${name}" with ₹${amount}`);
 }
 
 
@@ -444,16 +467,7 @@ function increaseAmount() {
   const person = people.find(p => p.name === name);
   if (person) {
     person.given += amount;
-
-    // Add notification
-    let notifs = getNotifications(currentUser.username);
-    notifs.push({
-      message: `${currentUser.username} increased "${name}"'s amount by ₹${amount}`,
-      time: new Date().toLocaleString()
-    });
-    saveNotifications(currentUser.username, notifs);
-    renderNotifications();
-
+    addNotification(`${currentUser.username} increased "${name}"'s amount by ₹${amount}`);
   } else {
     alert("Person not found!");
   }
@@ -472,16 +486,7 @@ function decreaseAmount() {
   if (person) {
     if (person.given >= amount) {
       person.given -= amount;
-
-      // Add notification
-      let notifs = getNotifications(currentUser.username);
-      notifs.push({
-        message: `${currentUser.username} decreased "${name}"'s amount by ₹${amount}`,
-        time: new Date().toLocaleString()
-      });
-      saveNotifications(currentUser.username, notifs);
-      renderNotifications();
-
+      addNotification(`${currentUser.username} decreased "${name}"'s amount by ₹${amount}`);
     } else {
       alert("Amount is greater than available balance!");
     }
@@ -508,7 +513,6 @@ function addItem() {
     return;
   }
 
-  // 1. ADD VALIDATION FOR itemAmount
   if (amount < 0) {
     alert("Item Amount cannot be a negative value.");
     document.getElementById("itemAmount").focus();
@@ -521,111 +525,60 @@ function addItem() {
     return;
   }
 
-  // ✅ Restriction: no item before first join date
+  // Check joining date restriction
   if (people.length > 0) {
-    const earliestJoin = new Date(
-      Math.min(...people.map(p => new Date(p.date).getTime()))
-    );
-    const itemDate = new Date(date);
-
-    if (itemDate < earliestJoin) {
-      alert(`❌ Cannot add item before the first join date (${earliestJoin.toLocaleDateString()}).`);
+    const earliestJoin = new Date(Math.min(...people.map(p => new Date(p.date).getTime())));
+    if (new Date(date) < earliestJoin) {
+      alert("❌ Cannot add item before the first person's joining date.");
       return;
     }
   }
 
-  // Add item
   items.push({ date, name, amount, buyer });
 
-  // Reset form fields
   document.getElementById("itemDate").value = "";
   document.getElementById("itemName").value = "";
   document.getElementById("itemAmount").value = "";
+  document.getElementById("purchasedBy").value = "";
 
-  // Keep Purchased By auto-filled
   if (currentUser) {
     document.getElementById("purchasedBy").value = currentUser.username;
   }
 
   updateSummary();
-
-  // --- POPUP LOGIC START ---
-  const popup = document.getElementById("popup-message");
-  if (popup) {
-    // 1. Show popup
-    popup.classList.remove("opacity-0");
-    popup.classList.add("opacity-100");
-
-    // 2. Hide after 2s
-    setTimeout(() => {
-      popup.classList.remove("opacity-100");
-      popup.classList.add("opacity-0");
-    }, 2000);
-  }
-  let notifs = getNotifications(currentUser.username);
-  notifs.push({
-    message: `${currentUser.username} added item "${name}" of ₹${amount}`,
-    time: new Date().toLocaleString()
-  });
-  saveNotifications(currentUser.username, notifs);
-  renderNotifications();
-
+  addNotification(`${currentUser.username} added item "${name}" of ₹${amount}`);
 }
 
 
 // ---------------- ADMIN ACTIONS ----------------
 function setLeaveDate(index) {
-  const leaveDate = prompt("Enter leave date (YYYY-MM-DD):");
-  if (leaveDate) {
-    people[index].leaveDate = leaveDate;
-    updateSummary();
-  }
-  let notifs = getNotifications(currentUser.username);
-  notifs.push({
-    message: `${people[index].name} has set a leave date: ${leaveDate}`,
-    time: new Date().toLocaleString()
-  });
-  saveNotifications(currentUser.username, notifs);
-  renderNotifications();
-
+  const date = prompt("Enter leave date (YYYY-MM-DD):");
+  if (!date) return;
+  people[index].leaveDate = date;
+  updateSummary();
+  addNotification(`${currentUser.username} set leave date for "${people[index].name}" to ${date}`);
 }
 
 function removePerson(index) {
   if (!confirm("Are you sure you want to remove this person?")) return;
+  const removed = people[index];
   people.splice(index, 1);
   updateSummary();
+  addNotification(`${currentUser.username} removed person "${removed.name}"`);
 }
 
 function removeItem(index) {
   if (!confirm("Are you sure you want to remove this item?")) return;
   if (index < 0 || index >= items.length) return;
+
   const removed = items[index];
   items.splice(index, 1);
   updateSummary();
 
-  if (typeof notifications === 'undefined' || !Array.isArray(notifications)) {
-    notifications = JSON.parse(localStorage.getItem('notifications')) || [];
-  }
   const actor = (currentUser && currentUser.username) ? currentUser.username : 'Unknown';
-  let notifs = getNotifications(currentUser.username);
-  notifs.push({
-    message: `${actor} removed item "${removed.name}" of ₹${removed.amount}`,
-    time: new Date().toLocaleString()
-  });
-
-  if (typeof saveNotifications === 'function') {
-    saveNotifications(currentUser.username, notifs);
-  } else {
-    localStorage.setItem('notifications', JSON.stringify(notifications));
-  }
-  if (typeof renderNotifications === 'function') {
-    renderNotifications();
-  }
+  addNotification(`${actor} removed item "${removed.name}" of ₹${removed.amount}`);
 }
-
-
 // ---------------- SETTLEMENT ----------------
-// Settlement Modal
 function openSettlement() {
   const modal = document.createElement("div");
   modal.className = "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
@@ -744,11 +697,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 // ---------------- SAVE & CLEAR ----------------
-
 function saveAndClear() {
   const confirmSave = confirm("Do you want to save and clear the current data?");
-  if (!confirmSave) {
-    return; // user clicked "No"
+  if (!confirmSave) return;
+
+  // nothing to save?
+  if ((!people || people.length === 0) && (!items || items.length === 0)) {
+    alert("Nothing to save. Add people or items first.");
+    return;
   }
 
   // --- compute kitty summary
@@ -756,20 +712,20 @@ function saveAndClear() {
   const totalSpent = items.reduce((s, it) => s + (Number(it.amount) || 0), 0);
   const kittyBalance = parseFloat((totalGiven - totalSpent).toFixed(2));
 
-  // --- clone balances for settlement calculation
+  // --- clone balances for settlement calculation (don't mutate original people objects)
   const balances = {};
   people.forEach(p => balances[p.name] = Number(p.balance) || 0);
 
   const settlements = [];
-  let creditors = Object.entries(balances)
+  const creditors = Object.entries(balances)
     .filter(([_, bal]) => bal > 0)
     .map(([name, bal]) => ({ name, balance: bal }));
 
-  let debtors = Object.entries(balances)
+  const debtors = Object.entries(balances)
     .filter(([_, bal]) => bal < 0)
     .map(([name, bal]) => ({ name, balance: Math.abs(bal) }));
 
-  // --- compute settlement matching
+  // --- compute settlement matching (uses local creditor/debtor copies)
   for (let d of debtors) {
     let debtLeft = d.balance;
     for (let c of creditors) {
@@ -778,20 +734,22 @@ function saveAndClear() {
 
       let settle = Math.min(debtLeft, c.balance);
       if (settle > 0) {
-        settlements.push({ from: d.name, to: c.name, amount: parseFloat(settle.toFixed(2)) });
+        settlements.push({
+          from: d.name,
+          to: c.name,
+          amount: parseFloat(settle.toFixed(2))
+        });
         c.balance -= settle;
-        balances[d.name] += settle;
-        balances[c.name] -= settle;
         debtLeft -= settle;
       }
     }
   }
 
-  // --- create record
+  // --- create record (deep clone people/items to freeze state)
   const record = {
     dateSaved: new Date().toISOString(),
-    people: [...people],
-    items: [...items],
+    people: JSON.parse(JSON.stringify(people)),
+    items: JSON.parse(JSON.stringify(items)),
     kitty: {
       totalGiven: parseFloat(totalGiven.toFixed(2)),
       totalSpent: parseFloat(totalSpent.toFixed(2)),
@@ -804,17 +762,32 @@ function saveAndClear() {
   let previousRecords = JSON.parse(localStorage.getItem("previousRecords")) || [];
   previousRecords.push(record);
   localStorage.setItem("previousRecords", JSON.stringify(previousRecords));
+
+  // --- clear current data and persist
   people = [];
   items = [];
-  saveData();
-  updateSummary();
+  saveData();  
+  updateSummary(); 
+  resetNotifications();// reset all users' read state to force seeing new notification
 
+  if (document.getElementById("recordsList")) {
+    renderPreviousRecords();
+  }
+
+  // --- add a global notification
+  try {
+    addNotification(`${currentUser && currentUser.username ? currentUser.username : "Someone"} saved a record and cleared current data and notifications(saved on ${new Date(record.dateSaved).toLocaleString()})`);
+  } catch (e) {
+    console.warn("addNotification failed:", e);
+  }
   alert("✅ Record saved successfully! Data has been cleared.");
 }
 
-// Render Previous Records
+
+// ---------------- RENDER PREVIOUS RECORDS ----------------
 function renderPreviousRecords() {
   const container = document.getElementById("recordsList");
+  if (!container) return;
   const previousRecords = JSON.parse(localStorage.getItem("previousRecords")) || [];
   container.innerHTML = "";
 
@@ -827,96 +800,101 @@ function renderPreviousRecords() {
     // create card container
     const card = document.createElement("div");
     card.className = "bg-[#151515] border border-white/10 rounded-xl p-4 shadow-md";
+
     card.innerHTML = `
-          <div class="flex items-center justify-between cursor-pointer" onclick="toggleDetails(${index})">
-           <h2 class="text-lg font-semibold">Record ${index + 1} — ${new Date(record.dateSaved).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</h2>
-            <span id="toggleIcon-${index}" class="text-gray-400">\uff0b</span>
-          </div>
-          <div id="details-${index}" class="hidden mt-4 space-y-4">
-            
-            <h3 class="text-md text-gray-400 font-semibold">People</h3>
-            <table class="w-full text-sm border border-white/20">
-              <thead class="bg-white/10">
+      <div class="flex items-center justify-between cursor-pointer" onclick="toggleDetails(${index})">
+        <h2 class="text-lg font-semibold">Record ${index + 1} — ${new Date(record.dateSaved).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</h2>
+        <span id="toggleIcon-${index}" class="text-gray-400">\uff0b</span>
+      </div>
+      <div id="details-${index}" class="hidden mt-4 space-y-4">
+        <h3 class="text-md text-gray-400 font-semibold">People</h3>
+        <table class="w-full text-sm border border-white/20">
+          <thead class="bg-white/10">
+            <tr>
+              <th class="p-2">Name</th>
+              <th class="p-2">Given</th>
+              <th class="p-2">Share</th>
+              <th class="p-2">Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${record.people.map(p => `
+              <tr>
+                <td class="p-2 border border-white/10">${p.name}</td>
+                <td class="p-2 border border-white/10">₹${p.given}</td>
+                <td class="p-2 border border-white/10">₹${p.share}</td>
+                <td class="p-2 border border-white/10">${p.balance}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+
+        <h3 class="text-md text-gray-400 font-semibold">Items</h3>
+        <table class="w-full text-sm border border-white/20">
+          <thead class="bg-white/10">
+            <tr>
+              <th class="p-2 border border-white/10">Date</th>
+              <th class="p-2 border border-white/10">Item</th>
+              <th class="p-2 border border-white/10">Amount</th>
+              <th class="p-2 border border-white/10">Buyer</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${record.items.map(i => `
+              <tr>
+                <td class="p-2 border border-white/10">${i.date}</td>
+                <td class="p-2 border border-white/10">${i.name}</td>
+                <td class="p-2 border border-white/10">₹${i.amount}</td>
+                <td class="p-2 border border-white/10">${i.buyer}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+
+        <h3 class="text-md text-gray-400 font-semibold">Summary</h3>
+        <div class="bg-black/30 p-3 rounded-lg border border-white/20">
+          <p><strong>Total Given:</strong> ₹${record.kitty.totalGiven}</p>
+          <p><strong>Total Spent:</strong> ₹${record.kitty.totalSpent}</p>
+          <p><strong>Kitty Balance:</strong> ₹${record.kitty.kittyBalance}</p>
+        </div>
+
+        ${record.settlements && record.settlements.length > 0 ? `
+          <h3 class="text-md text-gray-400 font-semibold">Settlements</h3>
+          <table class="w-full text-sm border border-white/20">
+            <thead class="bg-white/10">
+              <tr>
+                <th class="p-2 border border-white/10">From</th>
+                <th class="p-2 border border-white/10">To</th>
+                <th class="p-2 border border-white/10">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${record.settlements.map(s => `
                 <tr>
-                  <th class="p-2">Name</th>
-                  <th class="p-2">Given</th>
-                  <th class="p-2">Share</th>
-                  <th class="p-2">Balance</th>
+                  <td class="p-2 border border-white/10">${s.from}</td>
+                  <td class="p-2 border border-white/10">${s.to}</td>
+                  <td class="p-2 border border-white/10">₹${s.amount}</td>
                 </tr>
-              </thead>
-              <tbody>
-                ${record.people.map(p => `
-                  <tr>
-                    <td class="p-2 border border-white/10">${p.name}</td>
-                    <td class="p-2 border border-white/10">₹${p.given}</td>
-                    <td class="p-2 border border-white/10">₹${p.share}</td>
-                    <td class="p-2 border border-white/10">${p.balance}</td>
-                  </tr>
-                `).join("")}
-              </tbody>
-            </table>
+              `).join("")}
+            </tbody>
+          </table>
+        ` : `<p class="text-gray-400">No settlements recorded.</p>`}
 
-            <h3 class="text-md text-gray-400 font-semibold">Items</h3>
-            <table class="w-full text-sm border border-white/20">
-              <thead class="bg-white/10">
-                <tr>
-                  <th class="p-2 border border-white/10">Date</th>
-                  <th class="p-2 border border-white/10">Item</th>
-                  <th class="p-2 border border-white/10">Amount</th>
-                  <th class="p-2 border border-white/10">Buyer</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${record.items.map(i => `
-                  <tr>
-                    <td class="p-2 border border-white/10">${i.date}</td>
-                    <td class="p-2 border border-white/10">${i.name}</td>
-                    <td class="p-2 border border-white/10">₹${i.amount}</td>
-                    <td class="p-2 border border-white/10">${i.buyer}</td>
-                  </tr>
-                `).join("")}
-              </tbody>
-            </table>
-
-            <h3 class="text-md text-gray-400 font-semibold">Summary</h3>
-            <div class="bg-black/30 p-3 rounded-lg border border-white/20">
-              <p><strong>Total Given:</strong> ₹${record.kitty.totalGiven}</p>
-              <p><strong>Total Spent:</strong> ₹${record.kitty.totalSpent}</p>
-              <p><strong>Kitty Balance:</strong> ₹${record.kitty.kittyBalance}</p>
-            </div>
-
-            ${record.settlements && record.settlements.length > 0 ? `
-              <h3 class="text-md text-gray-400 font-semibold">Settlements</h3>
-              <table class="w-full text-sm border border-white/20">
-                <thead class="bg-white/10">
-                  <tr>
-                    <th class="p-2 border border-white/10">From</th>
-                    <th class="p-2 border border-white/10">To</th>
-                    <th class="p-2 border border-white/10">Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${record.settlements.map(s => `
-                    <tr>
-                      <td class="p-2 border border-white/10">${s.from}</td>
-                      <td class="p-2 border border-white/10">${s.to}</td>
-                      <td class="p-2 border border-white/10">₹${s.amount}</td>
-                    </tr>
-                  `).join("")}
-                </tbody>
-              </table>
-            ` : `<p class="text-gray-400">No settlements recorded.</p>`}
-
-            ${currentUser && currentUser.role === 'admin' ? `
-            <button onclick="deleteRecord(${index})" 
-             class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg mt-3"> Delete Record </button>` : ''}`;
+        ${currentUser && currentUser.role === 'admin' ? `
+          <button onclick="deleteRecord(${index})" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg mt-3"> Delete Record </button>
+        ` : ''}
+      </div>
+    `;
     container.appendChild(card);
   });
 }
 
+
+// toggle expand/collapse
 function toggleDetails(index) {
   const details = document.getElementById(`details-${index}`);
   const icon = document.getElementById(`toggleIcon-${index}`);
+  if (!details || !icon) return;
   if (details.classList.contains("hidden")) {
     details.classList.remove("hidden");
     icon.textContent = "\uFF0D";
@@ -926,20 +904,30 @@ function toggleDetails(index) {
   }
 }
 
+// delete a saved record (admin only)
 function deleteRecord(index) {
-  const confirmDelete = confirm("Are you sure you want to delete this record?");
-  if (!confirmDelete) {
-    return;
-  }
-
+  if (!confirm("Are you sure you want to delete this record?")) return;
   let records = JSON.parse(localStorage.getItem("previousRecords")) || [];
+  if (index < 0 || index >= records.length) return;
+  
+  // Get the record before deleting it to access its dateSaved field
+  const deletedRecord = records[index];
+  
   records.splice(index, 1);
   localStorage.setItem("previousRecords", JSON.stringify(records));
   renderPreviousRecords();
-
+  
+  // Format the date from the record's dateSaved field
+  const recordDate = new Date(deletedRecord.dateSaved);
+  const formattedDate = recordDate.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+  
+  addNotification(`${currentUser && currentUser.username ? currentUser.username : 'Someone'} deleted saved record from ${formattedDate}`);
   alert("Record deleted successfully!");
 }
-renderPreviousRecords();
 // ---------------- INIT ----------------
 document.addEventListener("DOMContentLoaded", () => {
   if (!window.location.href.includes('authen.html')) {
@@ -951,5 +939,4 @@ document.addEventListener("DOMContentLoaded", () => {
   if (document.getElementById('recordsList')) {
     renderPreviousRecords();
   }
-  // User role-based UI logic is now handled in applyUserPermissions()
 });
