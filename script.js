@@ -53,19 +53,20 @@ function applyUserPermissions() {
   if (currentUser.role === 'user') {
     // Hide admin-only elements
     document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+
     // Disable admin actions
     document.querySelectorAll('.admin-action').forEach(el => {
       el.disabled = true;
       el.classList.add('opacity-50', 'cursor-not-allowed');
     });
-    // Set purchasedBy field to current user's username if present
-    const purchasedBy = document.getElementById("purchasedBy");
-    if (purchasedBy) purchasedBy.value = currentUser.username;
   }
 
-  // Navbar
+  const purchasedBy = document.getElementById("purchasedBy");
+  if (purchasedBy) purchasedBy.value = currentUser.username;
+
   updateNavbar();
 }
+
 
 // ---------------- USER MANAGEMENT (ADMIN) ----------------
 
@@ -261,6 +262,7 @@ function renderPeople() {
   const table = document.getElementById("peopleTable");
   if (!table) return;
   table.innerHTML = "";
+
   people.forEach((p, index) => {
     const actionButtons = currentUser && currentUser.role === 'admin'
       ? `<td class="p-2 admin-only sm:table-cell">
@@ -269,9 +271,16 @@ function renderPeople() {
          </td>`
       : '<td class="p-2 admin-only sm:table-cell"></td>';
 
+    // ✅ If leaveDate exists, add blue indicator
+    const leaveIndicator = p.leaveDate
+      ? `<span onclick="showLeaveDate('${p.name}', '${p.leaveDate}')" 
+                class=" text-green-400 text-lg cursor-pointer" 
+                title="Click to see leave date"><img class = "h-2 inline" src="./images/dot.png"></span>`
+      : "";
+
     const row = `<tr class="border border-white/20">
       <td class="p-2">${p.date || "-"}</td>
-      <td class="p-2">${p.name}</td>
+      <td class="p-2">${p.name} ${leaveIndicator}</td>
       <td class="p-2">₹${p.given || 0}</td>
       <td class="p-2">₹${p.share || 0}</td>
       <td class="p-2 ${p.balance < 0 ? "text-red-500" : "text-green-600"} font-semibold">
@@ -282,6 +291,12 @@ function renderPeople() {
     table.innerHTML += row;
   });
 }
+// Show leave date alert
+function showLeaveDate(name, leaveDate) {
+  alert(`${name}'s Leave Date: ${new Date(leaveDate).toLocaleDateString()}`);
+}
+
+
 
 // ---------------- RENDER ITEMS ----------------
 function renderItems() {
@@ -373,16 +388,54 @@ function addItem() {
   const name = document.getElementById("itemName").value;
   const amount = Number(document.getElementById("itemAmount").value);
   const buyer = document.getElementById("purchasedBy").value;
-  if (!date || !name || isNaN(amount) || !buyer) return;
+  const alphaNumericWithAlphaRegex = /^(?=.*[A-Za-z])[A-Za-z0-9]+$/;
 
+  if (!date || !name || isNaN(amount) || !buyer) {
+    alert("Please fill in all required fields.");
+    return;
+  }
+
+  // 1. ADD VALIDATION FOR itemAmount
+  if (amount < 0) {
+    alert("Item Amount cannot be a negative value.");
+    document.getElementById("itemAmount").focus();
+    return;
+  }
+
+  if (!alphaNumericWithAlphaRegex.test(name)) {
+    alert("Item Name must contain only letters and numbers, AND must include at least one letter.");
+    document.getElementById("itemName").focus();
+    return;
+  }
+
+  // ✅ Restriction: no item before first join date
+  if (people.length > 0) {
+    const earliestJoin = new Date(
+      Math.min(...people.map(p => new Date(p.date).getTime()))
+    );
+    const itemDate = new Date(date);
+
+    if (itemDate < earliestJoin) {
+      alert(`❌ Cannot add item before the first join date (${earliestJoin.toLocaleDateString()}).`);
+      return;
+    }
+  }
+
+  // ✅ Add item
   items.push({ date, name, amount, buyer });
 
+  // Reset form fields
   document.getElementById("itemDate").value = "";
   document.getElementById("itemName").value = "";
   document.getElementById("itemAmount").value = "";
-  document.getElementById("purchasedBy").value = "";
+
+  // ✅ Keep Purchased By auto-filled
+  if (currentUser) {
+    document.getElementById("purchasedBy").value = currentUser.username;
+  }
 
   updateSummary();
+
   // --- POPUP LOGIC START ---
   const popup = document.getElementById("popup-message");
   if (popup) {
@@ -390,13 +443,14 @@ function addItem() {
     popup.classList.remove("opacity-0");
     popup.classList.add("opacity-100");
 
-    // 2. Hide after 1s
+    // 2. Hide after 2s
     setTimeout(() => {
       popup.classList.remove("opacity-100");
       popup.classList.add("opacity-0");
     }, 2000);
   }
 }
+
 
 // ---------------- ADMIN ACTIONS ----------------
 function setLeaveDate(index) {
