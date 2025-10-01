@@ -459,7 +459,7 @@ function addPerson() {
   document.getElementById("addDate").value = "";
 
   updateSummary();
-  addNotification(`${currentUser.username} added new person "${name}" with ₹${amount}`);
+  addNotification(`<strong>${currentUser.username}</strong> added new person <strong>${name}</strong> with ₹${amount}`);
 }
 
 
@@ -471,7 +471,7 @@ function increaseAmount() {
   const person = people.find(p => p.name === name);
   if (person) {
     person.given += amount;
-    addNotification(`${currentUser.username} increased "${name}"'s amount by ₹${amount}`);
+    addNotification(`<strong>${currentUser.username}</strong> increased <strong>${name}'s</strong> amount by ₹${amount}`);
   } else {
     alert("Person not found!");
   }
@@ -490,7 +490,7 @@ function decreaseAmount() {
   if (person) {
     if (person.given >= amount) {
       person.given -= amount;
-      addNotification(`${currentUser.username} decreased "${name}"'s amount by ₹${amount}`);
+      addNotification(`<strong>${currentUser.username}</strong> decreased <strong>${name}'s</strong> amount by ₹${amount}`);
     } else {
       alert("Amount is greater than available balance!");
     }
@@ -550,7 +550,7 @@ function addItem() {
   }
 
   updateSummary();
-  addNotification(`${currentUser.username} added item "${name}" of ₹${amount}`);
+  addNotification(`<strong>${currentUser.username}</strong> purchased item <strong>${name}</strong> of ₹${amount}`);
 }
 
 
@@ -560,7 +560,7 @@ function setLeaveDate(index) {
   if (!date) return;
   people[index].leaveDate = date;
   updateSummary();
-  addNotification(`${currentUser.username} set leave date for "${people[index].name}" to ${date}`);
+  addNotification(`<strong>${currentUser.username}</strong> set leave date for <strong>${people[index].name}</strong> to ${date}`);
 }
 
 function removePerson(index) {
@@ -568,7 +568,7 @@ function removePerson(index) {
   const removed = people[index];
   people.splice(index, 1);
   updateSummary();
-  addNotification(`${currentUser.username} removed person "${removed.name}"`);
+  addNotification(`<strong>${currentUser.username}</strong> removed person <strong>${removed.name}</strong>`);
 }
 
 function removeItem(index) {
@@ -580,7 +580,7 @@ function removeItem(index) {
   updateSummary();
 
   const actor = (currentUser && currentUser.username) ? currentUser.username : 'Unknown';
-  addNotification(`${actor} removed item "${removed.name}" of ₹${removed.amount}`);
+  addNotification(`<strong>${actor}</strong> removed item <strong>${removed.name}</strong> of ₹${removed.amount}`);
 }
 // ---------------- SETTLEMENT ----------------
 function openSettlement() {
@@ -780,7 +780,7 @@ function saveAndClear() {
 
   // --- add a global notification
   try {
-    addNotification(`${currentUser && currentUser.username ? currentUser.username : "Someone"} saved a record and cleared current data and notifications(saved on ${new Date(record.dateSaved).toLocaleString()})`);
+    addNotification(`<strong>${currentUser && currentUser.username ? currentUser.username : "Someone"}</strong> saved a record and cleared current data and notifications(saved on ${new Date(record.dateSaved).toLocaleString()})`);
   } catch (e) {
     console.warn("addNotification failed:", e);
   }
@@ -929,7 +929,7 @@ function deleteRecord(index) {
     day: 'numeric'
   });
 
-  addNotification(`${currentUser && currentUser.username ? currentUser.username : 'Someone'} deleted saved record from ${formattedDate}`);
+  addNotification(`<strong>${currentUser && currentUser.username ? currentUser.username : 'Someone'}</strong> deleted saved record from ${formattedDate}`);
   alert("Record deleted successfully!");
 }
 // ---------------- INIT ----------------
