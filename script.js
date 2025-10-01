@@ -549,6 +549,11 @@ function addItem() {
     document.getElementById("purchasedBy").value = currentUser.username;
   }
 
+  document.getElementById("popup-message").classList.remove("opacity-0");
+  setTimeout(() => {
+    document.getElementById("popup-message").classList.add("opacity-0");
+  }, 2000);
+
   updateSummary();
   addNotification(`<strong>${currentUser.username}</strong> purchased item <strong>${name}</strong> of ₹${amount}`);
 }
