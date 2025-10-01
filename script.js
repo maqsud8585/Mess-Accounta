@@ -147,10 +147,29 @@ function updateNavbar() {
   if (document.getElementById('userDropdown')) return; // prevent duplicates
 
   const userDropdown = document.createElement('div');
-  userDropdown.className = 'relative';
+  userDropdown.className = 'relative flex items-center space-x-4';
   userDropdown.id = 'userDropdown';
   userDropdown.innerHTML = `
-    <button id="userMenuBtn" class="flex items-center space-x-2  text-gray-300 hover:text-white transition">
+  <!-- Notifications -->
+  <div id="notificationsDropdown" class="relative">
+    <button id="notifBtn" class="relative text-xl">
+      🔔
+      <span id="notifCount" class="absolute -top-1 -right-2 bg-red-500 text-white text-xs px-1 rounded-full hidden"></span>
+    </button>
+    <div id="notifMenu" class="absolute right-0 mt-2 w-72 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-xl py-2 hidden z-50">
+   <div class="flex justify-between items-center px-4 py-2 border-b border-white/10">
+    <span class="text-gray-300 text-sm">Notifications</span>
+    <button onclick="clearNotifications()" class="text-xs text-blue-400 hover:underline">Clear All</button>
+   </div>
+   <div id="notifList" class="max-h-64 overflow-y-auto text-sm text-gray-300"></div>
+  </div>
+
+
+  </div>
+
+  <!-- User Menu -->
+  <div class="relative">
+    <button id="userMenuBtn" class="flex items-center space-x-2 text-gray-300 hover:text-white transition">
       <div class="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
         ${currentUser.username.charAt(0).toUpperCase()}
       </div>
@@ -170,7 +189,9 @@ function updateNavbar() {
         <span>Logout</span>
       </button>
     </div>
-  `;
+  </div>
+`;
+
   navbar.appendChild(userDropdown);
 
   const userMenuBtn = document.getElementById('userMenuBtn');
@@ -182,6 +203,63 @@ function updateNavbar() {
   });
   document.addEventListener('click', () => userDropdownMenu.classList.add('hidden'));
 }
+
+function getNotifications(username) {
+  return JSON.parse(localStorage.getItem(`notifications_${username}`)) || [];
+}
+
+function saveNotifications(username, notifs) {
+  localStorage.setItem(`notifications_${username}`, JSON.stringify(notifs));
+}
+
+
+// render notifications
+function renderNotifications() {
+  const notifCount = document.getElementById("notifCount");
+  const notifList = document.getElementById("notifList");
+  if (!notifCount || !notifList || !currentUser) return;
+
+  const notifs = getNotifications(currentUser.username);
+
+  notifList.innerHTML = "";
+  if (notifs.length === 0) {
+    notifList.innerHTML = `<p class="px-4 py-2 text-gray-400">No notifications</p>`;
+    notifCount.classList.add("hidden");
+  } else {
+    notifCount.textContent = notifs.length;
+    notifCount.classList.remove("hidden");
+
+    notifs.slice().reverse().forEach(n => {
+      notifList.innerHTML += `
+        <div class="px-4 py-2 hover:bg-white/10 cursor-pointer border-b border-white/5">
+          <p>${n.message}</p>
+          <p class="text-xs text-gray-500">${n.time}</p>
+        </div>`;
+    });
+  }
+}
+
+
+// Dropdown toggle
+document.addEventListener("DOMContentLoaded", () => {
+  const notifBtn = document.getElementById("notifBtn");
+  const notifMenu = document.getElementById("notifMenu");
+  if (notifBtn) {
+    notifBtn.addEventListener("click", e => {
+      e.stopPropagation();
+      notifMenu.classList.toggle("hidden");
+    });
+  }
+  document.addEventListener("click", () => notifMenu?.classList.add("hidden"));
+  renderNotifications();
+});
+
+function clearNotifications() {
+  if (!currentUser) return;
+  saveNotifications(currentUser.username, []);
+  renderNotifications();
+}
+
 
 // ---------------- PROTECT PAGES ----------------
 
@@ -330,19 +408,33 @@ function addPerson() {
   const date = document.getElementById("addDate").value;
 
   if (!name || isNaN(amount) || !date) return;
+
   if (people.some(p => p.name.toLowerCase() === name.toLowerCase())) {
     alert("This name already exists!");
     return;
   }
 
+  // Add new person
   people.push({ name, given: amount, date, share: 0, balance: 0, leaveDate: null });
 
+  // Clear form fields
   document.getElementById("addName").value = "";
   document.getElementById("addAmount").value = "";
   document.getElementById("addDate").value = "";
 
+  // Update summary
   updateSummary();
+
+  // Add notification
+  let notifs = getNotifications(currentUser.username);
+  notifs.push({
+    message: `${currentUser.username} added new person "${name}" with ₹${amount}`,
+    time: new Date().toLocaleString()
+  });
+  saveNotifications(currentUser.username, notifs);
+  renderNotifications();
 }
+
 
 function increaseAmount() {
   const name = document.getElementById("incName").value.trim();
@@ -352,6 +444,16 @@ function increaseAmount() {
   const person = people.find(p => p.name === name);
   if (person) {
     person.given += amount;
+
+    // Add notification
+    let notifs = getNotifications(currentUser.username);
+    notifs.push({
+      message: `${currentUser.username} increased "${name}"'s amount by ₹${amount}`,
+      time: new Date().toLocaleString()
+    });
+    saveNotifications(currentUser.username, notifs);
+    renderNotifications();
+
   } else {
     alert("Person not found!");
   }
@@ -370,6 +472,16 @@ function decreaseAmount() {
   if (person) {
     if (person.given >= amount) {
       person.given -= amount;
+
+      // Add notification
+      let notifs = getNotifications(currentUser.username);
+      notifs.push({
+        message: `${currentUser.username} decreased "${name}"'s amount by ₹${amount}`,
+        time: new Date().toLocaleString()
+      });
+      saveNotifications(currentUser.username, notifs);
+      renderNotifications();
+
     } else {
       alert("Amount is greater than available balance!");
     }
@@ -381,6 +493,7 @@ function decreaseAmount() {
   document.getElementById("decAmount").value = "";
   updateSummary();
 }
+
 
 // ---------------- ADD ITEM ----------------
 function addItem() {
@@ -421,7 +534,7 @@ function addItem() {
     }
   }
 
-  // ✅ Add item
+  // Add item
   items.push({ date, name, amount, buyer });
 
   // Reset form fields
@@ -429,7 +542,7 @@ function addItem() {
   document.getElementById("itemName").value = "";
   document.getElementById("itemAmount").value = "";
 
-  // ✅ Keep Purchased By auto-filled
+  // Keep Purchased By auto-filled
   if (currentUser) {
     document.getElementById("purchasedBy").value = currentUser.username;
   }
@@ -449,6 +562,14 @@ function addItem() {
       popup.classList.add("opacity-0");
     }, 2000);
   }
+  let notifs = getNotifications(currentUser.username);
+  notifs.push({
+    message: `${currentUser.username} added item "${name}" of ₹${amount}`,
+    time: new Date().toLocaleString()
+  });
+  saveNotifications(currentUser.username, notifs);
+  renderNotifications();
+
 }
 
 
@@ -459,6 +580,14 @@ function setLeaveDate(index) {
     people[index].leaveDate = leaveDate;
     updateSummary();
   }
+  let notifs = getNotifications(currentUser.username);
+  notifs.push({
+    message: `${people[index].name} has set a leave date: ${leaveDate}`,
+    time: new Date().toLocaleString()
+  });
+  saveNotifications(currentUser.username, notifs);
+  renderNotifications();
+
 }
 
 function removePerson(index) {
@@ -468,9 +597,32 @@ function removePerson(index) {
 }
 
 function removeItem(index) {
+  if (!confirm("Are you sure you want to remove this item?")) return;
+  if (index < 0 || index >= items.length) return;
+  const removed = items[index];
   items.splice(index, 1);
   updateSummary();
+
+  if (typeof notifications === 'undefined' || !Array.isArray(notifications)) {
+    notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+  }
+  const actor = (currentUser && currentUser.username) ? currentUser.username : 'Unknown';
+  let notifs = getNotifications(currentUser.username);
+  notifs.push({
+    message: `${actor} removed item "${removed.name}" of ₹${removed.amount}`,
+    time: new Date().toLocaleString()
+  });
+
+  if (typeof saveNotifications === 'function') {
+    saveNotifications(currentUser.username, notifs);
+  } else {
+    localStorage.setItem('notifications', JSON.stringify(notifications));
+  }
+  if (typeof renderNotifications === 'function') {
+    renderNotifications();
+  }
 }
+
 
 // ---------------- SETTLEMENT ----------------
 // Settlement Modal
@@ -652,8 +804,6 @@ function saveAndClear() {
   let previousRecords = JSON.parse(localStorage.getItem("previousRecords")) || [];
   previousRecords.push(record);
   localStorage.setItem("previousRecords", JSON.stringify(previousRecords));
-
-  // --- clear current data
   people = [];
   items = [];
   saveData();
@@ -677,8 +827,6 @@ function renderPreviousRecords() {
     // create card container
     const card = document.createElement("div");
     card.className = "bg-[#151515] border border-white/10 rounded-xl p-4 shadow-md";
-
-    // header (clickable to expand)
     card.innerHTML = `
           <div class="flex items-center justify-between cursor-pointer" onclick="toggleDetails(${index})">
            <h2 class="text-lg font-semibold">Record ${index + 1} — ${new Date(record.dateSaved).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</h2>
@@ -771,10 +919,10 @@ function toggleDetails(index) {
   const icon = document.getElementById(`toggleIcon-${index}`);
   if (details.classList.contains("hidden")) {
     details.classList.remove("hidden");
-    icon.textContent = "\uFF0D"; // minus sign
+    icon.textContent = "\uFF0D";
   } else {
     details.classList.add("hidden");
-    icon.textContent = "\uff0b";// plus sign
+    icon.textContent = "\uff0b";
   }
 }
 
