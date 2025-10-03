@@ -260,7 +260,7 @@ function updateNavbar() {
       Mark as view
     </button>
   </div>
-  <div id="notifList" class="max-h-100 overflow-y-auto text-sm text-gray-300"></div>
+  <div id="notifList" class="max-h-[70vh] overflow-y-auto text-sm text-gray-300"></div>
   </div>
   </div>
 
