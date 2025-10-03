@@ -444,16 +444,23 @@ function renderItems() {
 function addPerson() {
   const name = document.getElementById("addName").value.trim();
   const amount = Number(document.getElementById("addAmount").value);
-  const date = document.getElementById("addDate").value;
+  const dateInput = document.getElementById("addDate").value;
 
-  if (!name || isNaN(amount) || !date) return;
+  if (!name || isNaN(amount) || !dateInput) return;
 
   if (people.some(p => p.name.toLowerCase() === name.toLowerCase())) {
     alert("This name already exists!");
     return;
   }
 
-  people.push({ name, given: amount, date, share: 0, balance: 0, leaveDate: null });
+  // Format date to DD/MM/YYYY
+  const dateObj = new Date(dateInput);
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const year = dateObj.getFullYear();
+  const formattedDate = `${day}/${month}/${year}`;
+
+  people.push({ name, given: amount, date: formattedDate, share: 0, balance: 0, leaveDate: null });
 
   document.getElementById("addName").value = "";
   document.getElementById("addAmount").value = "";
@@ -504,18 +511,17 @@ function decreaseAmount() {
   updateSummary();
 }
 
-
 // ---------------- ADD ITEM ----------------
 function addItem() {
-  const date = document.getElementById("itemDate").value;
+  const dateInput = document.getElementById("itemDate").value;
   const name = document.getElementById("itemName").value;
   const amount = Number(document.getElementById("itemAmount").value);
   const buyer = document.getElementById("purchasedBy").value;
-  
+
   // Simple validation without complex regex
   const itemNameRegex = /^(?=.*[a-zA-Z])[a-zA-Z0-9 ,]+$/;
 
-  if (!date || !name || isNaN(amount) || !buyer) {
+  if (!dateInput || !name || isNaN(amount) || !buyer) {
     alert("Please fill in all required fields.");
     return;
   }
@@ -532,16 +538,24 @@ function addItem() {
     return;
   }
 
+  // Format date to DD/MM/YYYY
+  const dateObj = new Date(dateInput);
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const year = dateObj.getFullYear();
+  const formattedDate = `${day}/${month}/${year}`;
+
   // Check joining date restriction
   if (people.length > 0) {
     const earliestJoin = new Date(Math.min(...people.map(p => new Date(p.date).getTime())));
-    if (new Date(date) < earliestJoin) {
+    if (new Date(dateInput) < earliestJoin) {
       alert("❌ Cannot add item before the first person's joining date.");
       return;
     }
   }
 
-  items.push({ date, name, amount, buyer });
+  // Store the formatted date
+  items.push({ date: formattedDate, name, amount, buyer });
 
   document.getElementById("itemDate").value = "";
   document.getElementById("itemName").value = "";
