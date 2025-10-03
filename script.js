@@ -155,24 +155,11 @@ function saveReadNotifications(username, readIds) {
 // Add global notification
 function addNotification(message) {
   let allNotifs = getAllNotifications();
-
-  // Format current date to DD/MM/YYYY
-  const now = new Date();
-  const day = String(now.getDate()).padStart(2, '0');
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const year = now.getFullYear();
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  const seconds = String(now.getSeconds()).padStart(2, '0');
-
-  const formattedDateTime = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-
   const newNotif = {
     id: Date.now(),
     message,
-    time: formattedDateTime
+    time: new Date().toLocaleString()
   };
-
   allNotifs.push(newNotif);
   saveAllNotifications(allNotifs);
   renderNotifications();
@@ -457,23 +444,16 @@ function renderItems() {
 function addPerson() {
   const name = document.getElementById("addName").value.trim();
   const amount = Number(document.getElementById("addAmount").value);
-  const dateInput = document.getElementById("addDate").value;
+  const date = document.getElementById("addDate").value;
 
-  if (!name || isNaN(amount) || !dateInput) return;
+  if (!name || isNaN(amount) || !date) return;
 
   if (people.some(p => p.name.toLowerCase() === name.toLowerCase())) {
     alert("This name already exists!");
     return;
   }
 
-  // Format date to DD/MM/YYYY
-  const dateObj = new Date(dateInput);
-  const day = String(dateObj.getDate()).padStart(2, '0');
-  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-  const year = dateObj.getFullYear();
-  const formattedDate = `${day}/${month}/${year}`;
-
-  people.push({ name, given: amount, date: formattedDate, share: 0, balance: 0, leaveDate: null });
+  people.push({ name, given: amount, date, share: 0, balance: 0, leaveDate: null });
 
   document.getElementById("addName").value = "";
   document.getElementById("addAmount").value = "";
@@ -524,17 +504,18 @@ function decreaseAmount() {
   updateSummary();
 }
 
+
 // ---------------- ADD ITEM ----------------
 function addItem() {
-  const dateInput = document.getElementById("itemDate").value;
+  const date = document.getElementById("itemDate").value;
   const name = document.getElementById("itemName").value;
   const amount = Number(document.getElementById("itemAmount").value);
   const buyer = document.getElementById("purchasedBy").value;
-
+  
   // Simple validation without complex regex
   const itemNameRegex = /^(?=.*[a-zA-Z])[a-zA-Z0-9 ,]+$/;
 
-  if (!dateInput || !name || isNaN(amount) || !buyer) {
+  if (!date || !name || isNaN(amount) || !buyer) {
     alert("Please fill in all required fields.");
     return;
   }
@@ -551,24 +532,16 @@ function addItem() {
     return;
   }
 
-  // Format date to DD/MM/YYYY
-  const dateObj = new Date(dateInput);
-  const day = String(dateObj.getDate()).padStart(2, '0');
-  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-  const year = dateObj.getFullYear();
-  const formattedDate = `${day}/${month}/${year}`;
-
   // Check joining date restriction
   if (people.length > 0) {
     const earliestJoin = new Date(Math.min(...people.map(p => new Date(p.date).getTime())));
-    if (new Date(dateInput) < earliestJoin) {
+    if (new Date(date) < earliestJoin) {
       alert("❌ Cannot add item before the first person's joining date.");
       return;
     }
   }
 
-  // Store the formatted date
-  items.push({ date: formattedDate, name, amount, buyer });
+  items.push({ date, name, amount, buyer });
 
   document.getElementById("itemDate").value = "";
   document.getElementById("itemName").value = "";
