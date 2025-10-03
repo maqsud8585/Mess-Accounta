@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Previous Records</title>
+    <link href="./dist/output.css" rel="stylesheet">
+    <script src="./script.js" defer></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');
+
+        body {
+            font-family: "Roboto Condensed", sans-serif;
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body class="bg-black p-3 sm:p-6 pt-20 pb-20">
+    <!-- Navbar -->
+    <nav class="fixed top-0 left-0 w-full z-50 bg-black/60 backdrop-blur-md">
+        <div class="max-w-6xl mx-auto flex items-center justify-between px-3 py-4">
+            <!-- Logo -->
+            <div class="flex items-center space-x-2">
+                <img src="./images/Mess Accounta-logo.svg" alt="Logo" class="w-20 sm:w-24 md:w-28">
+            </div>
+
+            <!-- Desktop Navbar -->
+            <div class="hidden md:flex space-x-20 font-medium border border-white/20 px-5 py-2 rounded-full">
+                <a href="./index.html" class="text-gray-400 hover:text-white transition">Home</a>
+                <a href="./Purchase-History.html" class="text-gray-400 hover:text-white transition">Purchase History</a>
+                <a href="./Saved-Records.html" class="text-gray-400 hover:text-white transition">Saved Records</a>
+                <a href="./Manage-Users.html" class="text-gray-400 admin-only hover:text-white transition">Manage
+                    Users</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Bottom Navbar (separate from top nav) -->
+    <div
+        class="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-black/90 backdrop-blur-md border-t border-white/10 flex justify-around py-2 text-xs font-medium">
+
+        <!-- Home -->
+        <a href="./index.html" class="flex flex-col items-center text-gray-400 hover:text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mb-1" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 9.75L12 3l9 6.75V21a.75.75 0 01-.75.75H3.75A.75.75 0 013 21V9.75z" />
+            </svg>
+            Home
+        </a>
+
+        <!-- Purchase History -->
+        <a href="./Purchase-History.html" class="flex flex-col items-center text-gray-400 hover:text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mb-1" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M16 11V7a4 4 0 00-8 0v4M5 11h14l-1.68 9.39A2 2 0 0115.36 22H8.64a2 2 0 01-1.96-1.61L5 11z" />
+            </svg>
+            History
+        </a>
+
+        <!-- Past Months -->
+        <a href="./Saved-Records.html" class="flex flex-col items-center text-gray-400 hover:text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mb-1" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10m-11 8h12a2 2 0 002-2V7a2 2 0 00-2-2h-1V3m-10 2H7a2 2 0 00-2 2v10a2 2 0 002 2h1" />
+            </svg>
+            Saved
+        </a>
+
+        <!-- Manage Users -->
+        <a href="./Manage-Users.html" class="flex flex-col items-center text-gray-400 admin-only hover:text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mb-1" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m5-4a4 4 0 110-8 4 4 0 010 8zm6 0a4 4 0 110-8 4 4 0 010 8z" />
+            </svg>
+            Users
+        </a>
+    </div>
+
+    <div
+        class="bg-[#151515] border border-white/10 rounded-2xl w-full backdrop-blur-sm sm:border border-black mt-2 sm:mt-20 lg:w-2/3 mx-auto p-4 sm:p-6 shadow-lg">
+        <div class="max-w-6xl mx-auto">
+            <h1 class="text-2xl font-bold text-gray-400 mb-6">Saved Records</h1>
+
+            <div id="recordsList" class="space-y-4"></div>
+        </div>
+    </div>
+    <script>
+        // Add authentication check
+        document.addEventListener("DOMContentLoaded", () => {
+            // Check if user is authenticated
+            const user = localStorage.getItem('currentUser');
+            if (!user) {
+                window.location.href = './authen.html';
+                return;
+            }
+
+            currentUser = JSON.parse(user);
+            applyUserPermissions();
+            renderPreviousRecords();
+        });
+
+        // Apply user permissions
+        function applyUserPermissions() {
+            if (!currentUser) return;
+
+            // Hide delete buttons for users
+            if (currentUser.role === 'user') {
+                const deleteButtons = document.querySelectorAll('button[onclick^="deleteRecord"]');
+                deleteButtons.forEach(btn => btn.style.display = 'none');
+            }
+
+            // Update navbar
+            updateNavbar();
+        }
+    </script>
+</body>
+
+</html>

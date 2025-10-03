@@ -300,6 +300,7 @@ function updateNavbar() {
   document.addEventListener("click", () => notifMenu?.classList.add("hidden"));
   renderNotifications();
 }
+
 // ---------------- PROTECT PAGES ----------------
 function protectPage() {
   if (!checkAuth()) {
@@ -510,21 +511,23 @@ function addItem() {
   const name = document.getElementById("itemName").value;
   const amount = Number(document.getElementById("itemAmount").value);
   const buyer = document.getElementById("purchasedBy").value;
-  const alphaNumericWithAlphaRegex = /^(?=.*[A-Za-z])[A-Za-z0-9]+$/;
+  
+  // Simple validation without complex regex
+  const itemNameRegex = /^(?=.*[a-zA-Z])[a-zA-Z0-9 ,]+$/;
 
   if (!date || !name || isNaN(amount) || !buyer) {
     alert("Please fill in all required fields.");
     return;
   }
 
-  if (amount < 0) {
-    alert("Item Amount cannot be a negative value.");
+  if (amount <= 0) {
+    alert("Item Amount cannot be zero or a negative value.");
     document.getElementById("itemAmount").focus();
     return;
   }
 
-  if (!alphaNumericWithAlphaRegex.test(name)) {
-    alert("Item Name must contain only letters and numbers, AND must include at least one letter.");
+  if (!itemNameRegex.test(name)) {
+    alert("Item Name must contain only letters, numbers, spaces, and commas. It must include at least one letter.");
     document.getElementById("itemName").focus();
     return;
   }

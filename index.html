@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mess Accounta</title>
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link href="./dist/output.css" rel="stylesheet">
   <script src="./script.js" defer></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');
@@ -43,7 +43,7 @@
   </style>
 </head>
 
-<body class="bg-black p-3 sm:p-6 pt-20">
+<body class="bg-black p-3 sm:p-6 pt-20 pb-20">
   <!-- Navbar -->
   <nav class="fixed top-0 left-0 w-full z-50 bg-black/60 backdrop-blur-md">
     <div class="max-w-6xl mx-auto flex items-center justify-between px-3 py-4">
@@ -52,30 +52,60 @@
         <img src="./images/Mess Accounta-logo.svg" alt="Logo" class="w-20 sm:w-24 md:w-28">
       </div>
 
-      <!-- Links -->
+      <!-- Desktop Navbar -->
       <div class="hidden md:flex space-x-20 font-medium border border-white/20 px-5 py-2 rounded-full">
         <a href="./index.html" class="text-gray-400 hover:text-white transition">Home</a>
         <a href="./Purchase-History.html" class="text-gray-400 hover:text-white transition">Purchase History</a>
-        <a href="./Past-Months.html" class="text-gray-400 hover:text-white transition">Past Months</a>
+        <a href="./Saved-Records.html" class="text-gray-400 hover:text-white transition">Saved Records</a>
         <a href="./Manage-Users.html" class="text-gray-400 admin-only hover:text-white transition">Manage Users</a>
       </div>
-
-      <!-- Mobile Button -->
-      <button id="menuBtn" class="md:hidden focus:outline-none">
-        <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
-    </div>
-
-    <!-- Mobile Menu -->
-    <div id="mobileMenu" class="hidden md:hidden bg-black/80 backdrop-blur-md border-t border-white/10">
-      <a href="./index.html" class="block px-4 py-2 hover:bg-white/10">Home</a>
-      <a href="./Purchase-History.html" class="block px-4 py-2 hover:bg-white/10">Purchase History</a>
-      <a href="./Past-Months.html" class="block px-4 py-2 hover:bg-white/10">Past Months</a>
-      <a href="./Manage-Users.html" class="block px-4 py-2 admin-only hover:bg-white/10">Manage Users</a>
     </div>
   </nav>
+
+  <!-- Mobile Bottom Navbar (separate from top nav) -->
+  <div
+    class="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-black/90 backdrop-blur-md border-t border-white/10 flex justify-around py-2 text-xs font-medium">
+
+    <!-- Home -->
+    <a href="./index.html" class="flex flex-col items-center text-gray-400 hover:text-white">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mb-1" fill="none" viewBox="0 0 24 24"
+        stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M3 9.75L12 3l9 6.75V21a.75.75 0 01-.75.75H3.75A.75.75 0 013 21V9.75z" />
+      </svg>
+      Home
+    </a>
+
+    <!-- Purchase History -->
+    <a href="./Purchase-History.html" class="flex flex-col items-center text-gray-400 hover:text-white">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mb-1" fill="none" viewBox="0 0 24 24"
+        stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M16 11V7a4 4 0 00-8 0v4M5 11h14l-1.68 9.39A2 2 0 0115.36 22H8.64a2 2 0 01-1.96-1.61L5 11z" />
+      </svg>
+      History
+    </a>
+
+    <!-- Past Months -->
+    <a href="./Saved-Records.html" class="flex flex-col items-center text-gray-400 hover:text-white">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mb-1" fill="none" viewBox="0 0 24 24"
+        stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M8 7V3m8 4V3m-9 8h10m-11 8h12a2 2 0 002-2V7a2 2 0 00-2-2h-1V3m-10 2H7a2 2 0 00-2 2v10a2 2 0 002 2h1" />
+      </svg>
+      Saved
+    </a>
+
+    <!-- Manage Users -->
+    <a href="./Manage-Users.html" class="flex flex-col items-center text-gray-400 admin-only hover:text-white">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mb-1" fill="none" viewBox="0 0 24 24"
+        stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m5-4a4 4 0 110-8 4 4 0 010 8zm6 0a4 4 0 110-8 4 4 0 010 8z" />
+      </svg>
+      Users
+    </a>
+  </div>
 
   <div
     class="bg-[#151515] border border-white/10 rounded-2xl w-full backdrop-blur-sm sm:border border-black mt-2 sm:mt-20 lg:w-2/3 mx-auto p-4 sm:p-6 shadow-lg">
@@ -133,10 +163,11 @@
           <h3 class="font-semibold mb-3 text-center sm:text-left">Add Person</h3>
           <div class="flex flex-col sm:flex-row gap-2">
             <input id="addName" type="text" placeholder="Name"
-              class="border border-white/20 p-2 rounded w-full focus:outline-none">
+              class="border border-white/20 p-2 bg-transparent rounded w-full focus:outline-none">
             <input id="addAmount" type="number" placeholder="Amount"
-              class="border border-white/20 p-2 rounded w-full focus:outline-none">
-            <input id="addDate" type="date" class="border border-white/20 p-2 rounded w-full focus:outline-none">
+              class="border border-white/20 p-2 bg-transparent rounded w-full focus:outline-none">
+            <input id="addDate" type="date"
+              class="border border-white/20 p-2 bg-transparent rounded w-full focus:outline-none">
             <button onclick="addPerson()"
               class="bg-[#FFFFFF]/10 cursor-pointer backdrop-blur-lg border border-[#FFFFFF]/20 text-white-400 px-4 py-2 rounded-xl hover:bg-[#FFFFFF]/20 transition w-full sm:w-auto">Add</button>
           </div>
@@ -144,9 +175,9 @@
           <h3 class="font-semibold mb-3 mt-5 text-center sm:text-left">Increase Amount</h3>
           <div class="flex flex-col sm:flex-row gap-2">
             <input id="incName" type="text" placeholder="Name"
-              class="border border-white/20 p-2 rounded w-full focus:outline-none">
+              class="border border-white/20 p-2 bg-transparent rounded w-full focus:outline-none">
             <input id="incAmount" type="number" placeholder="Amount"
-              class="border border-white/20 p-2 rounded w-full focus:outline-none">
+              class="border border-white/20 p-2 bg-transparent rounded w-full focus:outline-none">
             <button onclick="increaseAmount()"
               class="flex items-center justify-center bg-transparent cursor-pointer border border-[#0B8112]/30 text-green-400 px-4 py-2 rounded-xl hover:shadow-[0_4px_12px_rgba(16,195,28,0.7)] transition w-20">
               <img src="./images/increase.png" alt="Increase" class="h-5 w-auto object-contain">
@@ -156,9 +187,9 @@
           <h3 class="font-semibold mb-3 mt-5 text-center sm:text-left">Decrease Amount</h3>
           <div class="flex flex-col sm:flex-row gap-2">
             <input id="decName" type="text" placeholder="Name"
-              class="border border-white/20 p-2 rounded w-full focus:outline-none">
+              class="border border-white/20 p-2 bg-transparent rounded w-full focus:outline-none">
             <input id="decAmount" type="number" placeholder="Amount"
-              class="border border-white/20 p-2 rounded w-full focus:outline-none">
+              class="border border-white/20 p-2 bg-transparent rounded w-full focus:outline-none">
             <button onclick="decreaseAmount()"
               class="flex items-center justify-center bg-transparent cursor-pointer border border-[#FF0012]/30 text-green-400 px-4 py-2 rounded-xl hover:shadow-[0_4px_12px_rgba(255,0,0,0.7)] transition w-20">
               <img src="./images/decrease.png" alt="Increase" class="h-5 w-auto object-contain">
@@ -171,15 +202,15 @@
           <h3 class="font-semibold mb-3 text-center sm:text-left">Add Item</h3>
           <div class="grid gap-2">
             <input id="itemDate" type="text" placeholder="Date" onfocus="(this.type='date')"
-              class="border border-white/20 p-2 rounded w-full focus:outline-none">
+              class="border border-white/20 p-2 bg-transparent rounded w-full focus:outline-none">
             <input id="itemName" type="text" placeholder="Enter Item"
-              class="border border-white/20 p-2 rounded focus:outline-none" pattern="(?=.*[A-Za-z])[A-Za-z0-9]+"
-              title="Must contain at least one letter, and only letters and numbers are allowed."
-              oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');">
+              class="border border-white/20 p-2 bg-transparent rounded focus:outline-none"
+              pattern="^(?=.*[A-Za-z])[A-Za-z0-9 ,]+$"
+              title="Must contain at least one letter, and only letters, numbers, spaces, and commas are allowed.">
             <input id="itemAmount" type="number" placeholder="Enter Amount"
-              class="border border-white/20 p-2 rounded focus:outline-none">
+              class="border border-white/20 p-2 bg-transparent rounded focus:outline-none">
             <input id="purchasedBy" type="text" disabled
-              class="border border-white/20 p-2 rounded w-full focus:outline-none">
+              class="border border-white/20 p-2 bg-transparent rounded w-full focus:outline-none">
             <!-- Popup Notification -->
             <div id="popup-message"
               class="fixed top-1/2 left-1/2 z-50 backdrop-blur opacity-0 pointer-events-none transform -translate-x-1/2 -translate-y-1/2">
