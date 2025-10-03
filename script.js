@@ -591,11 +591,19 @@ function addItem() {
 
 // ---------------- ADMIN ACTIONS ----------------
 function setLeaveDate(index) {
-  const date = prompt("Enter leave date (YYYY-MM-DD):");
-  if (!date) return;
-  people[index].leaveDate = date;
+  const dateInput = prompt("Enter leave date (YYYY-MM-DD):");
+  if (!dateInput) return;
+
+  // Format date to DD/MM/YYYY
+  const dateObj = new Date(dateInput);
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const year = dateObj.getFullYear();
+  const formattedDate = `${day}/${month}/${year}`;
+
+  people[index].leaveDate = formattedDate;
   updateSummary();
-  addNotification(`<strong>${currentUser.username}</strong> set leave date for <strong>${people[index].name}</strong> to ${date}`);
+  addNotification(`<strong>${currentUser.username}</strong> set leave date for <strong>${people[index].name}</strong> to ${formattedDate}`);
 }
 
 function removePerson(index) {
