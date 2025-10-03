@@ -155,11 +155,20 @@ function saveReadNotifications(username, readIds) {
 // Add global notification
 function addNotification(message) {
   let allNotifs = getAllNotifications();
+
+  // Format the current date to DD/MM/YYYY
+  const formattedTime = new Date().toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
+
   const newNotif = {
     id: Date.now(),
     message,
-    time: new Date().toLocaleString()
+    time: formattedTime // Use the newly formatted time
   };
+
   allNotifs.push(newNotif);
   saveAllNotifications(allNotifs);
   renderNotifications();
@@ -511,7 +520,7 @@ function addItem() {
   const name = document.getElementById("itemName").value;
   const amount = Number(document.getElementById("itemAmount").value);
   const buyer = document.getElementById("purchasedBy").value;
-  
+
   // Simple validation without complex regex
   const itemNameRegex = /^(?=.*[a-zA-Z])[a-zA-Z0-9 ,]+$/;
 
