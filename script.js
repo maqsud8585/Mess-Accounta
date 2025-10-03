@@ -155,11 +155,24 @@ function saveReadNotifications(username, readIds) {
 // Add global notification
 function addNotification(message) {
   let allNotifs = getAllNotifications();
+
+  // Format current date to DD/MM/YYYY
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const year = now.getFullYear();
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+
+  const formattedDateTime = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+
   const newNotif = {
     id: Date.now(),
     message,
-    time: new Date().toLocaleString()
+    time: formattedDateTime
   };
+
   allNotifs.push(newNotif);
   saveAllNotifications(allNotifs);
   renderNotifications();
