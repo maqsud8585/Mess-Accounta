@@ -819,7 +819,7 @@ function renderPreviousRecords() {
         <span id="toggleIcon-${index}" class="text-gray-400">\uff0b</span>
       </div>
       <div id="details-${index}" class="hidden mt-4 space-y-4">
-        <h3 class="text-md text-gray-400 font-semibold">People</h3>
+        <h3 class="text-md text-gray-400 font-semibold">Persons</h3>
         <table class="w-full text-sm border border-white/20">
           <thead class="bg-white/10">
             <tr>
@@ -867,7 +867,7 @@ function renderPreviousRecords() {
         <div class="bg-black/30 p-3 rounded-lg border border-white/20">
           <p><strong>Total Given:</strong> ₹${record.kitty.totalGiven}</p>
           <p><strong>Total Spent:</strong> ₹${record.kitty.totalSpent}</p>
-          <p><strong>Kitty Balance:</strong> ₹${record.kitty.kittyBalance}</p>
+          <p><strong>Remaining Balance:</strong> ₹${record.kitty.kittyBalance}</p>
         </div>
 
         ${record.settlements && record.settlements.length > 0 ? `

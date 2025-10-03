@@ -115,5 +115,34 @@
       </div>
     </div>
   </div>
+      <script>
+        // Add authentication check
+        document.addEventListener("DOMContentLoaded", () => {
+            // Check if user is authenticated
+            const user = localStorage.getItem('currentUser');
+            if (!user) {
+                window.location.href = './authen.html';
+                return;
+            }
+
+            currentUser = JSON.parse(user);
+            applyUserPermissions();
+            renderPreviousRecords();
+        });
+
+        // Apply user permissions
+        function applyUserPermissions() {
+            if (!currentUser) return;
+
+            // Hide delete buttons for users
+            if (currentUser.role === 'user') {
+                const deleteButtons = document.querySelectorAll('button[onclick^="deleteRecord"]');
+                deleteButtons.forEach(btn => btn.style.display = 'none');
+            }
+
+            // Update navbar
+            updateNavbar();
+        }
+    </script>
 </body>
 </html>
