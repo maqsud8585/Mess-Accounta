@@ -5,7 +5,7 @@ module.exports = {
     "./Purchase-History.html",
     "./script.js",
     "./Manage-Users.html",
-    "./Past-Months.html",
+    "./Saved-Records.html",
     "./authen.html",
   ],
   theme: {

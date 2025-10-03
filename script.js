@@ -430,10 +430,10 @@ function renderItems() {
       : '<td class="p-2 admin-only sm:table-cell"></td>';
 
     const row = `<tr class="border border-white/20">
-      <td class="p-2">${i.date}</td>
+      <td class="p-2 text-gray-400">${i.date}</td>
       <td class="p-2">${i.name}</td>
-      <td class="p-2">₹${i.amount}</td>
-      <td class="p-2">${i.buyer}</td>
+      <td class="p-2 text-red-600">₹${i.amount}</td>
+      <td class="p-2 text-blue-400">${i.buyer}</td>
       ${actionButton}
     </tr>`;
     table.innerHTML += row;
